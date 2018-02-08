@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <canvas id = "canvas" width="500" height="500" style = " border:1px,solid,#333;background:#666; "></canvas>
+    <script src="./whistle.js"></script>
+    <script>
+        var canvas = document.getElementById("canvas");
+        var Ws = new Ws(canvas);
+        var rect1 = new Ws.Rect("tect1",{x:400,y:400, fillColor:"red"})
+
+        rect1.setImgSrc('./bg.png')
+        console.log( rect1 )
+        setTimeout(() => {
+            new Ws.Rect("text")
+            rect1.setAttr("x",40)
+        }, 2000);
+    </script>
+</body>
+</html>
