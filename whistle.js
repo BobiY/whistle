@@ -21,6 +21,18 @@
             this.Rect();
         }
 
+        this.push = function (params) {
+            this.child.push(params)
+        }
+
+        this.reprint = function(){
+            var len = this.child.length;
+            this.content2D.clearRect(0, 0, this.Cwidth, this.Cheight);
+            for( var i = 0; i<len;i++ ){
+                this.child[i].printRect()
+            }
+        }
+
     }
     Window.Ws = Whistle;
     Whistle.prototype.Rect = Rect;
@@ -43,21 +55,21 @@ function Rect(text,option) {
     /*************** 方块元素的基本信息 ****************/
 
     this.print = function(content){
-
+        // 重绘的时候，如果有 src 则显然图片，如果没有则直接画方块
     }
 
     this.printRect = function (text) {
         this.text = text ? text : this.text;
-        this.content2D.clearRect(0, 0, this.Cwidth, this.Cheight);
         this.content2D.fillStyle = this.fillColor;
         this.content2D.fillRect(this.x, this.y, this.width, this.height);
         this.printText(this.x, this.y, this.text)
         return this;
     }
 
+
     this.setAttr = function (atttName, attrValue) {
         this[atttName] = attrValue;
-        this.printRect();
+        Ws.reprint();  //如果有样式更新，则触发清理画布，更新画布
     }
 
     this.printText = function (x, y, text) {
