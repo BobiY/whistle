@@ -14,76 +14,115 @@
         this.canvas = canvas;
         this.Cwidth = canvas.width;
         this.Cheight = canvas.height; 
-        this.content2D = canvas.getContext('2d');
+        this.content2D = canvas.getContext('2d'); // 画笔工具
         this.child = [];
-        this.refresh = function(atttName,attrValue){
-            this[atttName] = attrValue;
-            this.Rect();
-        }
 
         this.push = function (params) {
             this.child.push(params)
+            this.reprint()
         }
 
-        this.reprint = function(){
+        this.reprint = function(x,y){
+            x = x || 0;
+            y = y || 0;
             var len = this.child.length;
+            var cxt = this.content2D;
             this.content2D.clearRect(0, 0, this.Cwidth, this.Cheight);
             for( var i = 0; i<len;i++ ){
-                this.child[i].printRect()
+                // 这里将画布对象传入
+                this.child[i].printRect(cxt,x,y)
             }
         }
 
     }
     Window.Ws = Whistle;
-    Whistle.prototype.Rect = Rect;
-})(window)
+
+})(window);
+
+function Stage(stageObject){
+    var that = this;
+    this.cxt = stageObject;
+    this.add = function(node){
+        this.cxt.push(node);
+    }
+
+    this.mousePos = {
+        x:0,
+        y:0
+    }
+
+    stageObject.canvas.addEventListener("mousemove",function(e){
+        that.mousePos.x = e.clientX - that.cxt.canvas.getBoundingClientRect().left;
+        that.mousePos.y = e.clientY - that.cxt.canvas.getBoundingClientRect().top;
+        that.cxt.reprint(that.mousePos.x,that.mousePos.y);
+    })
+
+    Stage.prototype.Rect = Rect;
+}
 
 
-
-function Rect(text,option) {
+function Rect(option) {
+    console.log(this)
     /*************** 方块元素的基本信息 ****************/
     this.x = 0;
     this.y = 0;
     this.height = 32;
     this.width = 32;
     this.fillColor ="blue";
-    this.text = "";
-    this.content2D = Ws.content2D;
+    this.strokeColor = "#fff";
     this.textPos = {};
-    this.Cwidth = Ws.Cwidth;
-    this.Cheight = Ws.Cheight;
     /*************** 方块元素的基本信息 ****************/
 
     this.print = function(content){
         // 重绘的时候，如果有 src 则显然图片，如果没有则直接画方块
     }
 
-    this.printRect = function (text) {
-        this.text = text ? text : this.text;
-        this.content2D.fillStyle = this.fillColor;
-        this.content2D.fillRect(this.x, this.y, this.width, this.height);
-        this.printText(this.x, this.y, this.text)
+    this.drawRect = function(ctx){
+        ctx.beginPath()
+        ctx.fillStyle = this.fillColor;
+        ctx.rect(this.x, this.y, this.width, this.height);
+        ctx.fill();
+        ctx.closePath()
+    }
+
+    this.printRect = function (ctx,x,y) {
+        this.drawRect(ctx)
+        if(ctx.isPointInPath(x,y)){
+            ctx.strokeStyle = this.strokeColor;
+            ctx.lineWidth = 4;
+            ctx.strokeRect(this.x, this.y, this.width, this.height);
+        }
+        this.printText(this.x, this.y, this.text,ctx)
         return this;
     }
 
 
-    this.setAttr = function (atttName, attrValue) {
-        this[atttName] = attrValue;
-        Ws.reprint();  //如果有样式更新，则触发清理画布，更新画布
+    this.pointInPath = function(x,y){ // 判断点是否在方形内的自定义方法
+        var xRange = [this.x,this.x + this.width]
+        var yRenge = [this.y,this.y + this.height]
+        if( ( x>=xRange[0] && x<= xRange[1] ) && ( y>= yRenge[0] && y<=yRenge[1] ) ){
+            return true
+        }
+        return false
     }
 
-    this.printText = function (x, y, text) {
+    this.setAttr = function (atttName, attrValue) {
+        this[atttName] = attrValue;
+        this.ctx.reprint();  //如果有样式更新，则触发清理画布，更新画布
+    }
+
+    this.printText = function (x, y, text,ctx) {
         // 字体设置一定要在获取宽度之前
-        this.content2D.font = "12px Consolas";
-        this.content2D.fillStyle = "#fff";
-        var textWidth = this.getTextWidth(text);
+        ctx.font = "12px Consolas";
+        ctx.fillStyle = "#fff";
+        var textWidth = this.getTextWidth(text,ctx);
         var rectCenter = this.getRectCenter(x, y, this.width, this.height);
         if ( x > 0 ){
             x = rectCenter.x - textWidth / 2;
         }
         y = y + this.height + 15;
         this.textPos = {x:x,y:y}
-        this.content2D.fillText(text, x, y);
+        ctx.fillText(text, x, y);
     }
     this.getAttrFromOption = function(a,option){
         for( var key in option ){
@@ -101,8 +140,8 @@ function Rect(text,option) {
         }
     }
     // 获取需要显示文字的宽度
-    this.getTextWidth = function(text) {
-        return this.content2D.measureText(text).width;
+    this.getTextWidth = function(text,ctx) {
+        return ctx.measureText(text).width;
     }
 
     this.ptintImg = function (src) {
@@ -122,8 +161,7 @@ function Rect(text,option) {
     }
 
     this.getAttrFromOption(this, option);
-    this.printRect(text)
-
+    
 
 }
 

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <style type="text/css">
+        *{margin:0;padding:0;}
+        .canvas-box {position: relative;}
+        canvas {box-shadow: 0 0 10px rgba(0,0,0,0.2) }
+        </style>
+        
+        <div class="canvas-box"> 
+         <canvas id="cvs" width="500" height="400">不支持canvas</canvas>
+        </div>
+        
+        <script>
+        var cvs = document.getElementById('cvs');
+        var ctx = cvs.getContext('2d');
+        // 封装绘制的图形
+        function draw () {
+          ctx.fillStyle = '#000';
+          ctx.beginPath();
+          ctx.rect(0,0,30,30)
+          ctx.closePath();
+        }
+        function circle () {
+          ctx.fillStyle = '#000';
+          ctx.beginPath();
+          ctx.arc(100,200,50,0,Math.PI*2)
+          ctx.closePath();
+        }
+        // 初始化绘制图形
+        draw();
+        ctx.fill()
+        circle();
+        ctx.fill()
+        var fns = [draw,circle];
+        // 监听鼠标事件
+        cvs.onmousemove = function (e) {
+          // 得到鼠标的坐标
+          var x = e.pageX, y =e.pageY;
+          ctx.clearRect(0,0,400,300)
+          // 遍历绘制图形
+          for(var i = fns.length; i--;) {
+            fns[i]();
+            // 每绘制一个图形就判断一次当前鼠标的坐标是否在这个图形上，然后进行自定义操作
+            if(ctx.isPointInPath(x,y)) {
+              ctx.fillStyle = "#f00"
+            } else {
+              ctx.fillStyle = "#000"
+            }
+            ctx.fill()
+          }
+        }
+        </script> 
+</body>
+</html>

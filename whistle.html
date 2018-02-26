@@ -11,15 +11,14 @@
     <script src="./whistle.js"></script>
     <script>
         var canvas = document.getElementById("canvas");
-        var Ws = new Ws(canvas);
-        var rect1 = new Ws.Rect("tect1",{x:400,y:400, fillColor:"red"})
+        var Ws = new Ws(canvas);// 获取画布
+        var stage = new Stage(Ws);//
+        var rect1 = new stage.Rect({text:"blue",x:400,y:400, fillColor:"red",width:60})
+        stage.add(rect1)
 
-        rect1.setImgSrc('./bg.png')
-        console.log( rect1 )
-        setTimeout(() => {
-            new Ws.Rect("text")
-            rect1.setAttr("x",40)
-        }, 2000);
+        var rect2 = new stage.Rect({text:"red",x:40,y:40})
+        stage.add(rect2)
+
     </script>
 </body>
 </html>
