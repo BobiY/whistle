@@ -4,6 +4,7 @@
  * 目前需要的  储存画布信息的类
  *            储存方块信息的类
  *            储存线信息的类
+ * 将鼠标触发的各种事件做区分，在触发重绘时应根据事件类型和元素做出相应的动作
  */
 
 
@@ -36,21 +37,27 @@
             }
             return false
         }
-        this.leaveCanvas = function (x,y) { // 使用离屏canvas去判断重叠时高亮的元素
-            var leave = document.createElement("canvas");
-            leave.height = this.Cheight;
-            leave.width = this.Cwidth;
-            var len = this.child.length;
-            var ctx = canvas.getContext('2d'); // 画笔工具
-            for (var i = 0; i < len; i++) {
-                // 这里将画布对象传入
+
+        this.pointIsInDraw = function(x,y,arr,ctx,cb){
+            var len = arr.length;
+            for( var i = 0;i < len;i++ ){
                 var currentChild = this.child[i];
                 currentChild.index = i;
                 currentChild.printRect(ctx)
                 if (ctx.isPointInPath(x, y)) {
-                    currentArr.push( currentChild );
+                    cb(currentChild)
                 }
             }
+        }
+        this.leaveCanvas = function (x,y) { // 使用离屏canvas去判断重叠时高亮的元素
+            var leave = document.createElement("canvas");
+            leave.height = this.Cheight;
+            leave.width = this.Cwidth;
+            var ctx = canvas.getContext('2d'); // 画笔工具
+            function doSomething( ele ){
+                currentArr.push(ele)
+            };
+            this.pointIsInDraw( x,y,this.child,ctx,doSomething )
 
         }
         this.reprint = function(x,y,bool){ //当条件改变时，重绘所有图案
@@ -61,7 +68,7 @@
             currentArr = [];
             var currentId = 0;
             this.leaveCanvas(x,y);
-            this.content2D.clearRect(0, 0, this.Cwidth, this.Cheight);
+            cxt.clearRect(0, 0, this.Cwidth, this.Cheight);
             currentArr.length && (currentId = currentArr[currentArr.length -1 ].id);
             for( var i = 0; i<len;i++ ){
                 // 这里将画布对象传入
@@ -113,6 +120,11 @@
             var y = Y - canvasBoundingClientRect.top;
             return { x:x,y:y } 
         }
+
+        this.canvas.addEventListener("click",function(e){  // 点击是要相应事件的
+            _this.mousePos = _this.getMousePosition(e.clientX, e.clientY)
+            _this.reprint(_this.mousePos.x, _this.mousePos.y,false);
+        })
 
     }
     Window.Ws = Whistle;
