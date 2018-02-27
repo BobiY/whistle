@@ -21,7 +21,7 @@
         this.mouseDownPos = { x: 0, y: 0 }; // 鼠标按下的位置
         this.dtDistence = { dx:0,dy:0 };
         this.mousePos = {x:0,y:0};
-
+        var currentArr = [];
         var canvasBoundingClientRect = this.canvas.getBoundingClientRect()
         this.push = function (params) {
             this.child.push(params)
@@ -36,41 +36,46 @@
             }
             return false
         }
+        this.leaveCanvas = function (x,y) {
+            var leave = document.createElement("canvas");
+            leave.height = this.Cheight;
+            leave.width = this.Cwidth;
+            var len = this.child.length;
+            var ctx = canvas.getContext('2d'); // 画笔工具
+            for (var i = 0; i < len; i++) {
+                // 这里将画布对象传入
+                var currentChild = this.child[i];
+                currentChild.index = i;
+                currentChild.printRect(ctx)
+                if (ctx.isPointInPath(x, y)) {
+                    currentArr.push( currentChild );
+                }
+            }
 
+        }
         this.reprint = function(x,y,bool){ //当条件改变时，重绘所有图案
             x = x || 0;
             y = y || 0;
             var len = this.child.length;
             var cxt = this.content2D;
-            var currentArr = [];
+            currentArr = [];
+            var currentId = 0;
+            this.leaveCanvas(x,y);
             this.content2D.clearRect(0, 0, this.Cwidth, this.Cheight);
+            currentArr.length && (currentId = currentArr[currentArr.length -1 ].id);
             for( var i = 0; i<len;i++ ){
                 // 这里将画布对象传入
                 var currentChild = this.child[i];
-                currentChild.index = i;
-                var tmpEle = null;
                 currentChild.printRect(cxt)
                 if (cxt.isPointInPath(x, y) ) {
-                    // currentArr.push( currentChild );
-                    // console.log(currentArr)
-                    // if (currentArr.length > 1 ){
-                    //     tmpEle = currentArr[0];
-                    //     for (var j = 1; j < currentArr.length;j++ ){
-                    //         if ( tmpEle.index < currentArr[j].index  ){
-                    //             tmpEle = currentArr[j]
-                    //         }
-                    //     }
-                    // }else{
-                    //     tmpEle = currentChild;
-                    // }
-                    //if (currentChild.id == tmpEle.id ){
+                    if ( currentId == currentChild.id ){
                         if ((!bool) || (!this.mouseInGraph) || (this.mouseInGraph.id !== currentChild.id)) {
                             this.mouseInGraph = currentChild;
                             cxt.strokeStyle = currentChild.strokeColor;
                             cxt.lineWidth = 4;
                             cxt.strokeRect(currentChild.x, currentChild.y, currentChild.width, currentChild.height);
                         }
-                    //}
+                    }
                     if (bool) {
                         this.mouseDownEle = currentChild;
                         this.dtDistence = {
@@ -138,7 +143,7 @@ function Rect(option) {
     this.fillColor ="blue";
     this.strokeColor = "#fff";
     this.textPos = {};
-    this.id = new Date().getTime();
+    this.id = new Date().getTime()*Math.random(); // 乘以随机数，防止id 重复
     this.mouseInEle = false;
     /*************** 方块元素的基本信息 ****************/
 
