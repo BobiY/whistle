@@ -36,7 +36,7 @@
             }
             return false
         }
-        this.leaveCanvas = function (x,y) {
+        this.leaveCanvas = function (x,y) { // 使用离屏canvas去判断重叠时高亮的元素
             var leave = document.createElement("canvas");
             leave.height = this.Cheight;
             leave.width = this.Cwidth;
@@ -144,7 +144,7 @@ function Rect(option) {
     this.strokeColor = "#fff";
     this.textPos = {};
     this.id = new Date().getTime()*Math.random(); // 乘以随机数，防止id 重复
-    this.mouseInEle = false;
+    this.attrArr = ["width", "height", "x", "y", "id", "fillColor", "strokeColor", "textPos","centerPos"]
     /*************** 方块元素的基本信息 ****************/
 
     this.getAttrFromOption(this, option);
