@@ -21,6 +21,8 @@
         this.mouseDownPos = { x: 0, y: 0 }; // 鼠标按下的位置
         this.dtDistence = { dx:0,dy:0 };
         this.mousePos = {x:0,y:0};
+
+        var canvasBoundingClientRect = this.canvas.getBoundingClientRect()
         this.push = function (params) {
             this.child.push(params)
             this.reprint()
@@ -86,8 +88,7 @@
         }
 
         this.canvas.addEventListener("mousedown",function (e) {
-            _this.mouseDownPos.x = e.clientX - _this.canvas.getBoundingClientRect().left;
-            _this.mouseDownPos.y = e.clientY - _this.canvas.getBoundingClientRect().top;
+            _this.mouseDownPos = _this.getMousePosition(e.clientX, e.clientY )
             _this.reprint(_this.mouseDownPos.x, _this.mouseDownPos.y,true )
         })
 
@@ -98,10 +99,15 @@
 
 
         this.canvas.addEventListener("mousemove", function (e) {
-            _this.mousePos.x = e.clientX - _this.canvas.getBoundingClientRect().left;
-            _this.mousePos.y = e.clientY - _this.canvas.getBoundingClientRect().top;
+            _this.mousePos = _this.getMousePosition(e.clientX, e.clientY)
             _this.reprint(_this.mousePos.x, _this.mousePos.y,false);
         })
+
+        this.getMousePosition = function(X,Y){
+            var x = X - canvasBoundingClientRect.left;
+            var y = Y - canvasBoundingClientRect.top;
+            return { x:x,y:y } 
+        }
 
     }
     Window.Ws = Whistle;
