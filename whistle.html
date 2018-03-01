@@ -26,23 +26,43 @@
         // rect3.on("mousedown",function (params) { // 回传的参数包括，当前的画笔工具和鼠标位置信息
         //     console.log(this)  // 回调函数中的 this 是指向当前的节点的
         // })
-        var x = 0.3;
-        var y = 0.1;
+        // var x = 3;
+        // var y = 1;
         //setInterval(aa,500)
 
         function aa() {
+            var x = Math.random()*4;
+            var y = Math.random()*4;
             if( rect1.x < 0 ){
                 return ;
             }
             dx = rect1.x - x
             dy = rect1.y - y
             rect1.setAttr( {x:dx,y:dy} )
+            if ((Math.abs(rect1.centerPos.x - rect2.centerPos.x)) < 20) {
+                console.log("boom")
+            }
             requestAnimationFrame(aa)
         }
+
+        function bb() {
+            var x = Math.random() * 3;
+            var y = Math.random();
+                if (rect2.x < 0) {
+                    return;
+                }
+                dx = rect2.x - x
+                dy = rect2.y - y
+                rect2.setAttr({ x: dx, y: dy })
+                if ( (Math.abs(rect1.centerPos.x - rect2.centerPos.x)) < 20) {
+                    console.log("boom")
+                 }
+                requestAnimationFrame(bb)
+            }
         rect1.on("click",function () {
-            requestAnimationFrame(aa)
+            aa()
+            bb()
         })
-        //requestAnimationFrame(aa)
     </script>
 </body>
 </html>

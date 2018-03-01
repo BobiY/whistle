@@ -127,16 +127,24 @@ function WhistleMethod(params) {
                 this.mouseDownEle.x = x - this.dtDistence.dx;
                 this.mouseDownEle.y = y - this.dtDistence.dy;
             }
+            
             if ( currentChild.src ){
-                currentChild.printImg(currentChild,currentChild.src, currentChild.isImageToRect, cxt );
+                if (currentId == currentChild.id ){
+                    currentChild.printImg(currentChild, currentChild.src, currentChild.isImageToRect, cxt,true);
+                }else{
+                    currentChild.printImg(currentChild, currentChild.src, currentChild.isImageToRect, cxt,false);
+                }
                 cb && cb(currentId, currentChild, x, y, cxt);
             }else{
-                currentChild.printRect(cxt)
+                if ( currentId == currentChild.id ){
+                    currentChild.printRect(cxt,true);
+                    cb && cb(currentId, currentChild, x, y, cxt);
+                }else{
+                    currentChild.printRect(cxt,false);
+                    cb && cb(currentId, currentChild, x, y, cxt);
+                }
             }
-            if (cxt.isPointInPath(x, y)) {
-                
-                cb && cb(currentId, currentChild, x, y, cxt);
-            }
+
         }
     }
 
@@ -147,10 +155,10 @@ function WhistleMethod(params) {
             cxt.lineWidth = 4;
             cxt.strokeRect(currentChild.x, currentChild.y, currentChild.width, currentChild.height);
             this.mouseDownEle = currentChild;
-        }
-        this.dtDistence = {
-            dx: this.mouseDownPos.x - this.mouseDownEle.x,
-            dy: this.mouseDownPos.y - this.mouseDownEle.y
+            this.dtDistence = {
+                dx: this.mouseDownPos.x - this.mouseDownEle.x,
+                dy: this.mouseDownPos.y - this.mouseDownEle.y
+            }
         }
 
     }
@@ -161,9 +169,6 @@ function WhistleMethod(params) {
                 this.mouseInGraph = currentChild;
             }
             this.mouseInGraph.eventList["mousemove"] && this.mouseInGraph.eventList['mousemove'](cxt, x, y); // 如果元素存在事件则执行元素对应的事件
-            cxt.strokeStyle = this.mouseInGraph.strokeColor;
-            cxt.lineWidth = 4;
-            cxt.strokeRect(this.mouseInGraph.x, this.mouseInGraph.y, this.mouseInGraph.width, this.mouseInGraph.height);
         }
     }
 
@@ -171,9 +176,6 @@ function WhistleMethod(params) {
         if (currentId == currentChild.id) {
             this.mouseInGraph = currentChild;
             currentChild.eventList["mouseup"] && currentChild.eventList['mouseup'](cxt, x, y); // 如果元素存在事件则执行元素对应的事件
-            cxt.strokeStyle = currentChild.strokeColor;
-            cxt.lineWidth = 4;
-            cxt.strokeRect(currentChild.x, currentChild.y, currentChild.width, currentChild.height);
         }
     }
 
@@ -181,11 +183,11 @@ function WhistleMethod(params) {
         if (currentId == currentChild.id) {
             this.mouseInGraph = currentChild;
             currentChild.eventList["click"] && currentChild.eventList['click'](cxt, x, y);// 如果元素存在事件则执行元素对应的事件
-            cxt.strokeStyle = currentChild.strokeColor;
-            cxt.lineWidth = 4;
-            cxt.strokeRect(currentChild.x, currentChild.y, currentChild.width, currentChild.height);
         }
     }
+
+
+
 }
 
 function Stage(stageObject) { // 调节画布和图形的中间类
@@ -202,7 +204,7 @@ function Stage(stageObject) { // 调节画布和图形的中间类
 
 
 function Rect(option) { //
-    //console.log(this)
+    console.log(this)
     /*************** 方块元素的基本信息 ****************/
     this.x = 0;
     this.y = 0;
@@ -215,13 +217,20 @@ function Rect(option) { //
     this.eventList = {};// 储存用户注册的事件列表
     this.src = "";
     this.isImageToRect = false;
-    this.ctx = Window.$$whistle;
+    //this.ctx = Window.$$whistle;
     this.attrArr = ["width", "height", "x", "y", "id", "fillColor", "strokeColor", "textPos","centerPos","eventList"]
     /*************** 方块元素的基本信息 ****************/
 
     this.getAttrFromOption(this, option);
-    this.centerPos = this.getRectCenter(this.x,this.y,this.width,this.height)
-    
+    this.centerPos = this.getRectCenter(this.x,this.y,this.width,this.height);
+    if (Object.defineProperty ){
+        Object.defineProperty(this, "ctx", {
+            value: Window.$$whistle,
+            writable: false, // 不可写!
+            configurable: false,
+            enumerable: false
+        });
+    }
 
 }
 
@@ -232,16 +241,29 @@ function RectMethod() {  // 储存方形画图的相关方法
         // 重绘的时候，如果有 src 则显然图片，如果没有则直接画方块
     }
 
-    this.drawRect = function (ctx) {
+    this.strokeAtMouseEle = function (currentChild, cxt) {
+        cxt.beginPath();
+        cxt.strokeStyle = currentChild.strokeColor;
+        cxt.lineWidth = 4;
+        cxt.strokeRect(currentChild.x, currentChild.y, currentChild.width, currentChild.height);
+        cxt.closePath();
+
+    }
+
+    this.drawRect = function (ctx,bool) {
         ctx.beginPath()
         ctx.fillStyle = this.fillColor;
         ctx.rect(this.x, this.y, this.width, this.height);
         ctx.fill();
         ctx.closePath()
+        if (bool) {
+            this.strokeAtMouseEle(this, ctx)
+        }
     }
 
-    this.printRect = function (ctx) {
-        this.drawRect(ctx)
+    this.printRect = function (ctx,bool) {
+        this.centerPos = this.getRectCenter(this.x, this.y, this.width,this.height)
+        this.drawRect(ctx,bool)
         this.printText(this.x, this.y, this.text, ctx)
         return this;
     }
@@ -282,17 +304,17 @@ function RectMethod() {  // 储存方形画图的相关方法
             // 需要错误类
             throw new Error("The first argument of the setAttr function is Object or String ,but you send " + type + ", please check!!!")
         }
-        this.ctx.reprint();  //如果有样式更新，则触发清理画布，更新画布
+        this.ctx.reprint(this.ctx.mousePos.x, this.ctx.mousePos.y);  //如果有样式更新，则触发清理画布，更新画布
     }
 
     this.drawImage = function (src,boolean,option) { // src 是当前图片的路径 boolean 是图片大小与所画方块不一致时，是否强制将图片尺寸缩小
         this.src = src;
         this.isImageToRect = boolean ? boolean : true;
-        this.ctx.reprint();
+        this.ctx.reprint(this.ctx.mousePos.x, this.ctx.mousePos.y);
         
     }
 
-    this.printImg = function (ele,src,boolean,ctx) {
+    this.printImg = function (ele,src,boolean,ctx,stroke) {
         var t =this;
         if( !this.img ){  // 缓存图片
             var image = new Image();
@@ -304,6 +326,10 @@ function RectMethod() {  // 储存方形画图的相关方法
         }else{
             this.fromBooleanDrawImage(this.img,boolean, ele,ctx);
         }
+        if ( stroke ){
+            this.strokeAtMouseEle(this, ctx)
+        }
+        this.centerPos = this.getRectCenter(this.x, this.y, this.width, this.height)
     }
 
     this.fromBooleanDrawImage = function (img,boolean,ele,ctx) {
