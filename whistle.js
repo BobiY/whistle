@@ -5,6 +5,9 @@
  *            储存方块信息的类
  *            储存线信息的类
  * 将鼠标触发的各种事件做区分，在触发重绘时应根据事件类型和元素做出相应的动作
+ * 什么清理图片缓存，怎么清除
+ * 目前报错的地方还在少数，多了就需要整理类
+ * 实现随机颜色
  */
 
 
@@ -118,13 +121,21 @@ function WhistleMethod(params) {
         for (var i = 0; i < len; i++) {
             // 这里将画布对象传入
             var currentChild = this.child[i];
-            if ((this.mouseDownEle && this.mouseInGraph) && (this.mouseInGraph.id == this.mouseDownEle.id)) {
+            
+            if (( this.mouseDownEle && this.mouseInGraph ) && (this.mouseInGraph.id == this.mouseDownEle.id)) {
+                
                 this.mouseDownEle.x = x - this.dtDistence.dx;
                 this.mouseDownEle.y = y - this.dtDistence.dy;
             }
-            currentChild.printRect(cxt)
+            if ( currentChild.src ){
+                currentChild.printImg(currentChild,currentChild.src, currentChild.isImageToRect, cxt );
+                cb && cb(currentId, currentChild, x, y, cxt);
+            }else{
+                currentChild.printRect(cxt)
+            }
             if (cxt.isPointInPath(x, y)) {
-                cb(currentId, currentChild, x, y, cxt);
+                
+                cb && cb(currentId, currentChild, x, y, cxt);
             }
         }
     }
@@ -135,8 +146,8 @@ function WhistleMethod(params) {
             cxt.strokeStyle = currentChild.strokeColor;
             cxt.lineWidth = 4;
             cxt.strokeRect(currentChild.x, currentChild.y, currentChild.width, currentChild.height);
+            this.mouseDownEle = currentChild;
         }
-        this.mouseDownEle = currentChild;
         this.dtDistence = {
             dx: this.mouseDownPos.x - this.mouseDownEle.x,
             dy: this.mouseDownPos.y - this.mouseDownEle.y
@@ -183,7 +194,7 @@ function Stage(stageObject) { // 调节画布和图形的中间类
     this.add = function (node) {
         this.cxt.push(node);
     }
-
+    Window.$$whistle = stageObject;
     Stage.prototype.Rect = Rect;
 }
 
@@ -202,6 +213,9 @@ function Rect(option) { //
     this.textPos = {};
     this.id = new Date().getTime()*Math.random(); // 乘以随机数，防止id 重复
     this.eventList = {};// 储存用户注册的事件列表
+    this.src = "";
+    this.isImageToRect = false;
+    this.ctx = Window.$$whistle;
     this.attrArr = ["width", "height", "x", "y", "id", "fillColor", "strokeColor", "textPos","centerPos","eventList"]
     /*************** 方块元素的基本信息 ****************/
 
@@ -232,11 +246,73 @@ function RectMethod() {  // 储存方形画图的相关方法
         return this;
     }
 
+    this.newAttrNameIsString = function (attrName, attrValue) {
+        his.attrNameIsSrc(attrName, attrValue)
+        this[attrName] = attrValue;
+    } 
 
+    this.newAttrNameIsObject = function (attrName) {
+        for (var k in attrName) {
+            this.attrNameIsSrc(k, attrName[k])
+            this[k] = attrName[k]
+        }   
+    }
 
-    this.setAttr = function (atttName, attrValue) {
-        this[atttName] = attrValue;
+    this.attrNameIsSrc = function (attrName,src) {
+        if (attrName == "src") {  // 如果是更改图片的 src ，则直接更新图片资源缓存
+            var image = new Image();
+            image.src = ele.src;
+            image.onload = function () {
+                t.img = this;
+            }
+        }
+    }
+
+    this.setAttr = function (attrName, attrValue) {  // 应该支持属性批量更新
+        var type = Util.isType(attrName);
+        if (type == "String" || type == "Object" ){
+            switch(type){
+                case "String": 
+                    this.newAttrNameIsString(attrName, attrValue);
+                    break;
+                case "Object":
+                    this.newAttrNameIsObject( attrName );
+            }
+        }else{
+            // 需要错误类
+            throw new Error("The first argument of the setAttr function is Object or String ,but you send " + type + ", please check!!!")
+        }
         this.ctx.reprint();  //如果有样式更新，则触发清理画布，更新画布
+    }
+
+    this.drawImage = function (src,boolean,option) { // src 是当前图片的路径 boolean 是图片大小与所画方块不一致时，是否强制将图片尺寸缩小
+        this.src = src;
+        this.isImageToRect = boolean ? boolean : true;
+        this.ctx.reprint();
+        
+    }
+
+    this.printImg = function (ele,src,boolean,ctx) {
+        var t =this;
+        if( !this.img ){  // 缓存图片
+            var image = new Image();
+            image.src = ele.src;
+            image.onload = function () {
+                t.img = this;
+                t.fromBooleanDrawImage(this,boolean, ele, ctx);
+            }
+        }else{
+            this.fromBooleanDrawImage(this.img,boolean, ele,ctx);
+        }
+    }
+
+    this.fromBooleanDrawImage = function (img,boolean,ele,ctx) {
+        if( boolean ){
+            ctx.drawImage(img, ele.x, ele.y, ele.width, ele.height);
+        }else{
+            ctx.drawImage(img, ele.x, ele.y);
+        }
+        this.printText(this.x,this.y,this.text,ctx);
     }
 
     this.printText = function (x, y, text, ctx) {
@@ -272,21 +348,6 @@ function RectMethod() {  // 储存方形画图的相关方法
         return ctx.measureText(text).width;
     }
 
-    this.ptintImg = function (src) {
-        var t = this;
-        var image = new Image();
-        image.src = src;
-        image.onload = function () {
-            t.content2D.drawImage(this, t.x, t.y, t.width, t.height)
-        }
-        //this.content2D.drawImage(image, this.x, this.y);
-    }
-
-    this.setImgSrc = function (src) {
-        this.content2D.clearRect(0, 0, this.Cwidth, this.Cheight);
-        this.content2D.fillColor = "rgba(255,255,255,0)"
-        this.ptintImg(src);
-    }
 
     this.on = function (String,cb) {  // 事件注册函数
         this.eventList[String] = cb.bind(this);
@@ -295,9 +356,24 @@ function RectMethod() {  // 储存方形画图的相关方法
 }
 
 
+var $$jsTypeVar = {
+    "[object Number]":"Number",
+    "[object String]":"Srting",
+    "[object Undefined]":"Undefined",
+    "[object Boolean]":"Boolean",
+    "[object Object]":"Object",
+    "[object Array]":"Array",
+    "[object Function]":"Function"
+}
 
-function Util() { // 工具类
-    // 生成随机颜色
+var Util = { // 工具类  随机颜色
+    isType:function (value) {
+        return $$jsTypeVar[Object.prototype.toString.call(value)];
+    }
+}
+
+function WhistleAnimation(params) {  // 运动类
+    
 }
 
 

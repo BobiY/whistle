@@ -21,9 +21,28 @@
 
         var rect3 = new stage.Rect({ text: "11111", x: 100, y: 100,fillColor:"yellow" })
         stage.add(rect3)
+        rect3.drawImage("./a.png",true);
+        //rect3.setAttr([])
         // rect3.on("mousedown",function (params) { // 回传的参数包括，当前的画笔工具和鼠标位置信息
         //     console.log(this)  // 回调函数中的 this 是指向当前的节点的
         // })
+        var x = 0.3;
+        var y = 0.1;
+        //setInterval(aa,500)
+
+        function aa() {
+            if( rect1.x < 0 ){
+                return ;
+            }
+            dx = rect1.x - x
+            dy = rect1.y - y
+            rect1.setAttr( {x:dx,y:dy} )
+            requestAnimationFrame(aa)
+        }
+        rect1.on("click",function () {
+            requestAnimationFrame(aa)
+        })
+        //requestAnimationFrame(aa)
     </script>
 </body>
 </html>
