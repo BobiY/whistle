@@ -7,21 +7,21 @@
     <title>Document</title>
 </head>
 <body>
-    <canvas id = "canvas" width="500" height="500" style = " border:1px,solid,#333;background:#666; "></canvas>
+    <canvas id = "canvas" width="500" height="500" style = " border:1px,solid,#333;background:#666;margin:500px auto; "></canvas>
     <script src="./whistle.js"></script>
     <script>
         var canvas = document.getElementById("canvas");
         var Ws = new Ws(canvas);// 获取画布
         var stage = new Stage(Ws);//
-        var rect1 = new stage.Rect({text:"blue",x:400,y:400, fillColor:"red",width:60})
+        var rect1 = new stage.Rect({text:"blue",x:400,y:400, fillColor:Util.getRandomColor(),width:60,orderDraw:false})
         stage.add(rect1)
 
-        var rect2 = new stage.Rect({text:"red",x:40,y:40})
+        var rect2 = new stage.Rect({text:"red",x:40,y:40, orderDraw: false})
         stage.add(rect2)
 
-        var rect3 = new stage.Rect({ text: "11111", x: 100, y: 100,fillColor:"yellow" })
+        var rect3 = new stage.Rect({ text: "11111", x: 100, y: 100,fillColor: Util.getRandomColor("rgba"),isHighLight:false})
         stage.add(rect3)
-        rect3.drawImage("./a.png",true);
+        //rect3.drawImage("./a.png",true);
         //rect3.setAttr([])
         // rect3.on("mousedown",function (params) { // 回传的参数包括，当前的画笔工具和鼠标位置信息
         //     console.log(this)  // 回调函数中的 this 是指向当前的节点的
@@ -40,6 +40,7 @@
             dy = rect1.y - y
             rect1.setAttr( {x:dx,y:dy} )
             if ((Math.abs(rect1.centerPos.x - rect2.centerPos.x)) < 20) {
+                rect2.setAttr({ x: 400, y: 400 })
                 console.log("boom")
             }
             requestAnimationFrame(aa)
@@ -55,7 +56,7 @@
                 dy = rect2.y - y
                 rect2.setAttr({ x: dx, y: dy })
                 if ( (Math.abs(rect1.centerPos.x - rect2.centerPos.x)) < 20) {
-                    console.log("boom")
+                    rect2.setAttr({x:400,y:400})
                  }
                 requestAnimationFrame(bb)
             }

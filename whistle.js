@@ -90,21 +90,17 @@ function WhistleMethod(params) {
         for (var i = 0; i < len; i++) {
             var currentChild = this.child[i];
             currentChild.index = i;
-            currentChild.printRect(ctx)
+            currentChild.drawRect(ctx)  // 这里只是判断鼠标在不在图形中
             if (ctx.isPointInPath(x, y)) {
                 cb(currentChild)
             }
         }
     }
-    this.leaveCanvas = function (x, y) { // 使用离屏canvas去判断重叠时高亮的元素
-        var leave = document.createElement("canvas");
-        leave.height = this.Cheight;
-        leave.width = this.Cwidth;
-        var ctx = canvas.getContext('2d'); // 画笔工具
+    this.leaveCanvas = function (x, y) { // 先判断当前鼠标在那个元素上，这里存在多个元素重叠的现象，这是，按照渲染顺序，在最后渲染的元素上显示高亮样式
         function doSomething(ele) {
             currentArr.push(ele)
         };
-        this.pointIsInDraw(x, y, this.child, ctx, doSomething)
+        this.pointIsInDraw(x, y, this.child, this.content2D, doSomething)
 
     }
     this.reprint = function (x, y, cb) { //当条件改变时，重绘所有图案
@@ -115,8 +111,9 @@ function WhistleMethod(params) {
         var cxt = this.content2D;
         currentArr = [];
         var currentId = 0;
-        this.leaveCanvas(x, y);
+        this.leaveCanvas(x, y); // 先判断鼠标在那个元素里
         cxt.clearRect(0, 0, this.Cwidth, this.Cheight);
+        //console.log( currentArr )
         currentArr.length && (currentId = currentArr[currentArr.length - 1].id);
         for (var i = 0; i < len; i++) {
             // 这里将画布对象传入
@@ -151,13 +148,12 @@ function WhistleMethod(params) {
     this.onMouseDown = function (currentId, currentChild, x, y, cxt) {
         if (currentId == currentChild.id) {
             currentChild.eventList["mousedown"] && currentChild.eventList['mousedown'](cxt, x, y);  // 如果元素存在事件则执行元素对应的事件
-            cxt.strokeStyle = currentChild.strokeColor;
-            cxt.lineWidth = 4;
-            cxt.strokeRect(currentChild.x, currentChild.y, currentChild.width, currentChild.height);
-            this.mouseDownEle = currentChild;
-            this.dtDistence = {
-                dx: this.mouseDownPos.x - this.mouseDownEle.x,
-                dy: this.mouseDownPos.y - this.mouseDownEle.y
+            if (currentChild.orderDraw ){
+                this.mouseDownEle = currentChild;
+                this.dtDistence = {
+                    dx: this.mouseDownPos.x - this.mouseDownEle.x,
+                    dy: this.mouseDownPos.y - this.mouseDownEle.y
+                }
             }
         }
 
@@ -165,6 +161,7 @@ function WhistleMethod(params) {
 
     this.onMouseMove = function (currentId, currentChild, x, y, cxt) {
         if (currentId == currentChild.id) {
+            //this.canvas.style = "cursor:point"
             if (!this.mouseInGraph || (currentChild.id != this.mouseInGraph.id )){ // 如果是在拖拽一个元素，就不更新鼠标在哪个元素上
                 this.mouseInGraph = currentChild;
             }
@@ -204,25 +201,28 @@ function Stage(stageObject) { // 调节画布和图形的中间类
 
 
 function Rect(option) { //
-    console.log(this)
+   
     /*************** 方块元素的基本信息 ****************/
-    this.x = 0;
+    this.x = 0;  
     this.y = 0;
     this.height = 32;
     this.width = 32;
     this.fillColor ="blue";
     this.strokeColor = "#fff";
-    this.textPos = {};
+    this.textPos = {};  // 文字的位置以及宽度信息
     this.id = new Date().getTime()*Math.random(); // 乘以随机数，防止id 重复
     this.eventList = {};// 储存用户注册的事件列表
     this.src = "";
     this.isImageToRect = false;
+    this.isHighLight = true;
+    this.orderDraw = true;
     //this.ctx = Window.$$whistle;
     this.attrArr = ["width", "height", "x", "y", "id", "fillColor", "strokeColor", "textPos","centerPos","eventList"]
     /*************** 方块元素的基本信息 ****************/
 
     this.getAttrFromOption(this, option);
     this.centerPos = this.getRectCenter(this.x,this.y,this.width,this.height);
+
     if (Object.defineProperty ){
         Object.defineProperty(this, "ctx", {
             value: Window.$$whistle,
@@ -256,7 +256,7 @@ function RectMethod() {  // 储存方形画图的相关方法
         ctx.rect(this.x, this.y, this.width, this.height);
         ctx.fill();
         ctx.closePath()
-        if (bool) {
+        if (bool && this.isHighLight) {
             this.strokeAtMouseEle(this, ctx)
         }
     }
@@ -341,8 +341,31 @@ function RectMethod() {  // 储存方形画图的相关方法
         this.printText(this.x,this.y,this.text,ctx);
     }
 
+
+    /**  
+     * 支持文字的样式配置和文字在方块的位置
+     * 
+     *
+     * 
+     * 文字的书写
+     * fillText(要写的文字, 文字开始的横坐标, 文字开始的纵坐标, 文字占用的最长宽度)
+     * strokeText(要写的文字, 文字开始的横坐标, 文字开始的纵坐标, 文字占用的最长宽度)
+     * font 字体大小和样式
+     */
+
+    /*
+     * font参数的值分为
+     * font-style: normal(正常), italic(斜体字), oblique(倾斜字体) 后两种在网页端一般没什么区别
+     * font-variant: normal(正常), small-caps(英文小写字母变成小的大写)
+     * font-weight: normal(正常), bold(加粗) 100-900(一般不用)
+     * font-size: 文字大小
+     * font-family: 字体样式
+     * cxt.font = "oblique small-caps bold 50px Arial";
+     */
+
     this.printText = function (x, y, text, ctx) {
         // 字体设置一定要在获取宽度之前
+        ctx.beginPath();
         ctx.font = "12px Consolas";
         ctx.fillStyle = "#fff";
         var textWidth = this.getTextWidth(text, ctx);
@@ -353,6 +376,7 @@ function RectMethod() {  // 储存方形画图的相关方法
         y = y + this.height + 15;
         this.textPos = { x: x, y: y }
         ctx.fillText(text, x, y);
+        ctx.closePath();
     }
     this.getAttrFromOption = function (a, option) {
         for (var key in option) {
@@ -379,10 +403,14 @@ function RectMethod() {  // 储存方形画图的相关方法
         this.eventList[String] = cb.bind(this);
     }
 
+    this.update = function (params) {
+        this.ctx.reprint(this.ctx.mousePos.x, this.ctx.mousePos.y);
+    }
+
 }
 
 
-var $$jsTypeVar = {
+var $$jsTypeVar = {  // 支持的类型检查的类型
     "[object Number]":"Number",
     "[object String]":"Srting",
     "[object Undefined]":"Undefined",
@@ -395,8 +423,35 @@ var $$jsTypeVar = {
 var Util = { // 工具类  随机颜色
     isType:function (value) {
         return $$jsTypeVar[Object.prototype.toString.call(value)];
+    },
+    getRandomColor: function (string, opacity) {
+        opacity = opacity || 0.5;
+
+        if( !string ){
+            return '#' + Math.floor(Math.random() * 0xffffff).toString(16);
+        }
+
+        if( string == "rgb" ){
+            var r = Math.floor(Math.random() * 256);
+            var g = Math.floor(Math.random() * 256);
+            var b = Math.floor(Math.random() * 256);
+            return "rgb(" + r + ',' + g + ',' + b + ")";
+        }
+
+        if( string == "rgba" ){
+            var r = Math.floor(Math.random() * 256);
+            var g = Math.floor(Math.random() * 256);
+            var b = Math.floor(Math.random() * 256);
+            return "rgba(" + r + ',' + g + ',' + b + ',' + opacity +")";
+        }
     }
 }
+
+
+function DrawText() {  // 将文字的画法函数直接
+    
+}
+
 
 function WhistleAnimation(params) {  // 运动类
     
