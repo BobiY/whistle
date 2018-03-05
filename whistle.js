@@ -355,9 +355,9 @@ function RectMethod() {  // 储存方形画图的相关方法
         ctx.fillText(text, x, y);
         ctx.closePath();
     }
-    this.getAttrFromOption = function (a, option) {
+    this.getAttrFromOption = function (context, option) {
         for (var key in option) {
-            a[key] = option[key]
+            context[key] = option[key]
         }
     }
 
@@ -436,26 +436,75 @@ var Util = { // 工具类  随机颜色
      * font 字体大小和样式
      */
 
-    /*
-     * font参数的值分为
-     * font-style: normal(正常), italic(斜体字), oblique(倾斜字体) 后两种在网页端一般没什么区别
-     * font-variant: normal(正常), small-caps(英文小写字母变成小的大写)
-     * font-weight: normal(正常), bold(加粗) 100-900(一般不用)
-     * font-size: 文字大小
-     * font-family: 字体样式
-     * cxt.font = "oblique small-caps bold 50px Arial";
-     * 
-*/
-
 
 function DrawText(option) {  // 将文字的画法函数直接
-    var supportPos = ["bottom","top","left","right","center"]; // 支持的字符串位置
+    var supportPos = ["center","left","right","top","bottom"]; // 支持的字符串位置
     var textStyle = ["hor", "vertical","italic"]  // 水平，竖直，倾斜  支持的文字显示样式
+    var reg = /\%/g;
+    var reg1 = /\px/g;
+    this.left = 0;
+    this.right = 0;
+    this.top = 0;
+    this.bottom = 0;
+    this.font = "";
+    this.fontStyle = "normal";
+    this.fontVariant = "normal";
+    this.fontWeight = "normal";
+    this.fontSize = "16px";
+    this.fontFamily = "微软雅黑";
+    var textData = [ "left","right","top","bottom","width","height","style" ]
+    var styleArr = ["fontStyle", "fontVariant", "fontWeight", "fontSize","fontFamily"];
+    this.getAttrFromOption = function (context, option) {
+        for (var key in option) {
+            context[key] = option[key]
+        }
+    }
+
+    // 获取需要显示文字的宽度
+    this.getTextWidth = function (text, ctx) {
+        return ctx.measureText(text).width;
+    }
+
+    this.printText = function (x, y,width, height, text, ctx) { // x,y 是相对的小方块的位置  
+        // 字体设置一定要在获取宽度之前
+        ctx.beginPath();
+        ctx.font = this.font ? this.font : "12px Consolas";
+        ctx.fillStyle = "#fff";
+        var textWidth = this.getTextWidth(text, ctx);
+        if (x > 0) {
+            x = rectCenter.x - textWidth / 2;
+        }
+        y = y + this.height + 15;
+        this.textPos = { x: x, y: y }
+        ctx.fillText(text, x, y);
+        ctx.closePath();
+    }
+
+    this.adjustFontSize = function (fontSize) {
+        var type = Util.isType(fontSize);
+        if(type == "String"){
+            if (reg1.test(fontSize)) {
+                 this.fontSize = fontSize;
+            }
+        }else if( type == "Number" ){
+            this.fontSize = fontSize + "px";
+        }
+    }
+
+    this.getTextStyle = function () {
+        for( var i = 0;i<styleArr.length;i++ ){
+            this.font += this[styleArr[i]];
+        }
+    }
+
+    this.getAttrFromOption(this,option);
+    this.adjustFontSize(this.fontSize);
+    this.getTextStyle();
 }
 
 
-function WhistleAnimation(params) {  // 运动类
-    
+function WhistleAnimation(styleOption) {  // 运动类
+    this.font = styleOption[""]
 }
 
 
