@@ -7,7 +7,7 @@
     <title>Document</title>
 </head>
 <body>
-    <canvas id = "canvas" width="500" height="500" style = " border:1px,solid,#333;background:#666;margin:500px auto; "></canvas>
+    <canvas id = "canvas" width="500" height="500" style = " border:1px,solid,#333;background:#666;"></canvas>
     <script src="./whistle.js"></script>
     <script>
         var canvas = document.getElementById("canvas");
@@ -21,7 +21,7 @@
 
         var rect3 = new stage.Rect({ text: "11111", x: 100, y: 100,fillColor: Util.getRandomColor("rgba"),isHighLight:false})
         stage.add(rect3)
-        //rect3.drawImage("./a.png",true);
+        rect3.drawImage("./a.png",true);
         //rect3.setAttr([])
         // rect3.on("mousedown",function (params) { // 回传的参数包括，当前的画笔工具和鼠标位置信息
         //     console.log(this)  // 回调函数中的 this 是指向当前的节点的

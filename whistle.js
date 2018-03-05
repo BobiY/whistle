@@ -8,6 +8,7 @@
  * 什么清理图片缓存，怎么清除
  * 目前报错的地方还在少数，多了就需要整理类
  * 实现随机颜色
+ * 下一步是关于文字的处理
  */
 
 
@@ -131,17 +132,14 @@ function WhistleMethod(params) {
                 }else{
                     currentChild.printImg(currentChild, currentChild.src, currentChild.isImageToRect, cxt,false);
                 }
-                cb && cb(currentId, currentChild, x, y, cxt);
             }else{
                 if ( currentId == currentChild.id ){
                     currentChild.printRect(cxt,true);
-                    cb && cb(currentId, currentChild, x, y, cxt);
                 }else{
                     currentChild.printRect(cxt,false);
-                    cb && cb(currentId, currentChild, x, y, cxt);
                 }
             }
-
+            cb && cb(currentId, currentChild, x, y, cxt);
         }
     }
 
@@ -326,7 +324,7 @@ function RectMethod() {  // 储存方形画图的相关方法
         }else{
             this.fromBooleanDrawImage(this.img,boolean, ele,ctx);
         }
-        if ( stroke ){
+        if ( stroke && this.isHighLight ){
             this.strokeAtMouseEle(this, ctx)
         }
         this.centerPos = this.getRectCenter(this.x, this.y, this.width, this.height)
@@ -341,27 +339,6 @@ function RectMethod() {  // 储存方形画图的相关方法
         this.printText(this.x,this.y,this.text,ctx);
     }
 
-
-    /**  
-     * 支持文字的样式配置和文字在方块的位置
-     * 
-     *
-     * 
-     * 文字的书写
-     * fillText(要写的文字, 文字开始的横坐标, 文字开始的纵坐标, 文字占用的最长宽度)
-     * strokeText(要写的文字, 文字开始的横坐标, 文字开始的纵坐标, 文字占用的最长宽度)
-     * font 字体大小和样式
-     */
-
-    /*
-     * font参数的值分为
-     * font-style: normal(正常), italic(斜体字), oblique(倾斜字体) 后两种在网页端一般没什么区别
-     * font-variant: normal(正常), small-caps(英文小写字母变成小的大写)
-     * font-weight: normal(正常), bold(加粗) 100-900(一般不用)
-     * font-size: 文字大小
-     * font-family: 字体样式
-     * cxt.font = "oblique small-caps bold 50px Arial";
-     */
 
     this.printText = function (x, y, text, ctx) {
         // 字体设置一定要在获取宽度之前
@@ -448,8 +425,32 @@ var Util = { // 工具类  随机颜色
 }
 
 
-function DrawText() {  // 将文字的画法函数直接
-    
+/**  
+     * 支持文字的样式配置和文字在方块的位置
+     * 
+     *
+     * 
+     * 文字的书写
+     * fillText(要写的文字, 文字开始的横坐标, 文字开始的纵坐标, 文字占用的最长宽度)
+     * strokeText(要写的文字, 文字开始的横坐标, 文字开始的纵坐标, 文字占用的最长宽度)
+     * font 字体大小和样式
+     */
+
+    /*
+     * font参数的值分为
+     * font-style: normal(正常), italic(斜体字), oblique(倾斜字体) 后两种在网页端一般没什么区别
+     * font-variant: normal(正常), small-caps(英文小写字母变成小的大写)
+     * font-weight: normal(正常), bold(加粗) 100-900(一般不用)
+     * font-size: 文字大小
+     * font-family: 字体样式
+     * cxt.font = "oblique small-caps bold 50px Arial";
+     * 
+*/
+
+
+function DrawText(option) {  // 将文字的画法函数直接
+    var supportPos = ["bottom","top","left","right","center"]; // 支持的字符串位置
+    var textStyle = ["hor", "vertical","italic"]  // 水平，竖直，倾斜  支持的文字显示样式
 }
 
 
