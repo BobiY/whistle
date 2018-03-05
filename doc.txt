@@ -21,9 +21,23 @@ isPointInPath()  方法不支持 fillRect 方法，必须先画路径再填充�
 
  文字的位置支持字符串位置，也支持具体的参数位置
 
- 字符串位置 eg：bottom left center
 
- 数字位置 eg： left：10 or 10% ；top：10px or 10%
+ 只支持一种方式，需要传递至少两个距离值 ， 系统会默认给出一个 
+
+ left:0,right:0  水平居中
+
+ top:0,bottom:0  垂直居中
+
+left 属性有值，right 为 0 时，使用 left ，反之使用 right
+
+top 属性有值，bottom 为 0 时，使用 top ， 反之使用 bottom
+
+如果文字剧中显示 直接  textPos = “center”  否则 textPos 则必须是个对象
+
+默认位置 是在方块的下面，水平居中，就是 left,right 为0，bottom：-15px;
+
+文字排布样式 竖直，垂直，倾斜(这个主要为以后柱形图准备)  需要传递额外参数指定，不传则默认是水平
+
 
  需要支持超链接。
 
