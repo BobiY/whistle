@@ -207,13 +207,15 @@ function Rect(option) { //
     this.width = 32;
     this.fillColor ="blue";
     this.strokeColor = "#fff";
-    this.textPos = {};  // 文字的位置以及宽度信息
+    this.textPos = "";  // 文字的位置以及宽度信息
     this.id = new Date().getTime()*Math.random(); // 乘以随机数，防止id 重复
     this.eventList = {};// 储存用户注册的事件列表
     this.src = "";
     this.isImageToRect = false;
     this.isHighLight = true;
     this.orderDraw = true;
+    this.textOffsetX = 0;
+    this.textOffsetY = 0;
     //this.ctx = Window.$$whistle;
     this.attrArr = ["width", "height", "x", "y", "id", "fillColor", "strokeColor", "textPos","centerPos","eventList"]
     /*************** 方块元素的基本信息 ****************/
@@ -232,11 +234,41 @@ function Rect(option) { //
 
 }
 
+/**
+ *  textLeft
+ *  textRight
+ *  textTop
+ *  textBottom
+ *  textPos = ["top_left","top_center","top_right","center_left","center_center","center_right","bottom_left","bottom_center","bottom_right"]
+ * 
+ *  ***以下是字体样式********************
+ *  fontStyle 
+ *  fontVariant 
+ *  fontWeight 
+ *  fontSize 
+ *  fontFamily
+ *  fontColor    
+ *  
+ * 
+ */
 
 function RectMethod() {  // 储存方形画图的相关方法
+    var textData = ["textOffsetX","textOffsetY","textPos"]; // 文字位置相关配置
+    var styleArr = ["fontStyle", "fontVariant", "fontWeight", "fontSize", "fontFamily","fontColor"]; // 文字样式相关配置
 
     this.print = function (content) {
         // 重绘的时候，如果有 src 则显然图片，如果没有则直接画方块
+    }
+
+    this.getTextOption = function (context) {
+        var option = {};
+        var tmpArr = textData.concat( styleArr );
+        var len = tmpArr.length;
+        for( var i = 0;i<len;i++ ){
+            var child = tmpArr[i];
+            context[child] && (option[child] = context[child] );
+        }
+        return option;
     }
 
     this.strokeAtMouseEle = function (currentChild, cxt) {
@@ -262,7 +294,8 @@ function RectMethod() {  // 储存方形画图的相关方法
     this.printRect = function (ctx,bool) {
         this.centerPos = this.getRectCenter(this.x, this.y, this.width,this.height)
         this.drawRect(ctx,bool)
-        this.printText(this.x, this.y, this.text, ctx)
+        var option = this.getTextOption(this)
+        new DrawText(option).printText(this.x, this.y,this.width,this.height, this.text, ctx)
         return this;
     }
 
@@ -336,25 +369,11 @@ function RectMethod() {  // 储存方形画图的相关方法
         }else{
             ctx.drawImage(img, ele.x, ele.y);
         }
-        this.printText(this.x,this.y,this.text,ctx);
+        var option = this.getTextOption(this)
+        new DrawText(option).printText(this.x, this.y, this.width, this.height, this.text, ctx);
     }
 
 
-    this.printText = function (x, y, text, ctx) {
-        // 字体设置一定要在获取宽度之前
-        ctx.beginPath();
-        ctx.font = "12px Consolas";
-        ctx.fillStyle = "#fff";
-        var textWidth = this.getTextWidth(text, ctx);
-        var rectCenter = this.getRectCenter(x, y, this.width, this.height);
-        if (x > 0) {
-            x = rectCenter.x - textWidth / 2;
-        }
-        y = y + this.height + 15;
-        this.textPos = { x: x, y: y }
-        ctx.fillText(text, x, y);
-        ctx.closePath();
-    }
     this.getAttrFromOption = function (context, option) {
         for (var key in option) {
             context[key] = option[key]
@@ -370,18 +389,17 @@ function RectMethod() {  // 储存方形画图的相关方法
             y: centerY
         }
     }
-    // 获取需要显示文字的宽度
-    this.getTextWidth = function (text, ctx) {
-        return ctx.measureText(text).width;
-    }
-
-
+   
     this.on = function (String,cb) {  // 事件注册函数
         this.eventList[String] = cb.bind(this);
     }
 
     this.update = function (params) {
         this.ctx.reprint(this.ctx.mousePos.x, this.ctx.mousePos.y);
+    }
+
+    function createFontStyle() {
+        
     }
 
 }
@@ -425,34 +443,22 @@ var Util = { // 工具类  随机颜色
 }
 
 
-/**  
-     * 支持文字的样式配置和文字在方块的位置
-     * 
-     *
-     * 
-     * 文字的书写
-     * fillText(要写的文字, 文字开始的横坐标, 文字开始的纵坐标, 文字占用的最长宽度)
-     * strokeText(要写的文字, 文字开始的横坐标, 文字开始的纵坐标, 文字占用的最长宽度)
-     * font 字体大小和样式
-     */
-
-
 function DrawText(option) {  // 将文字的画法函数直接
     var supportPos = ["center","left","right","top","bottom"]; // 支持的字符串位置
     var textStyle = ["hor", "vertical","italic"]  // 水平，竖直，倾斜  支持的文字显示样式
     var reg = /\%/g;
     var reg1 = /\px/g;
-    this.left = 0;
-    this.right = 0;
-    this.top = 0;
-    this.bottom = 0;
+    var t = this;
+    this.textOffsetX = 0;
+    this.textOffsetY = 0;
     this.font = "";
     this.fontStyle = "normal";
     this.fontVariant = "normal";
     this.fontWeight = "normal";
-    this.fontSize = "16px";
+    this.fontSize = "12px";
     this.fontFamily = "微软雅黑";
-    var textData = [ "left","right","top","bottom","width","height","style" ]
+    this.textPos = "bottom_center";
+    var textData = [ "left","right","top","bottom" ]
     var styleArr = ["fontStyle", "fontVariant", "fontWeight", "fontSize","fontFamily"];
     this.getAttrFromOption = function (context, option) {
         for (var key in option) {
@@ -471,16 +477,12 @@ function DrawText(option) {  // 将文字的画法函数直接
         ctx.font = this.font ? this.font : "12px Consolas";
         ctx.fillStyle = "#fff";
         var textWidth = this.getTextWidth(text, ctx);
-        if (x > 0) {
-            x = rectCenter.x - textWidth / 2;
-        }
-        y = y + this.height + 15;
-        this.textPos = { x: x, y: y }
-        ctx.fillText(text, x, y);
+        var posObj = this.getTextPos(this.textPos,x,y,width,height,ctx,textWidth );
+        ctx.fillText(text, posObj.x, posObj.y);
         ctx.closePath();
     }
 
-    this.adjustFontSize = function (fontSize) {
+    this.adjustFontSize = function (fontSize) { //将 fontSize 调整成 数字 + px 的字符串形式
         var type = Util.isType(fontSize);
         if(type == "String"){
             if (reg1.test(fontSize)) {
@@ -491,11 +493,74 @@ function DrawText(option) {  // 将文字的画法函数直接
         }
     }
 
-    this.getTextStyle = function () {
+    this.getTextStyle = function () {  // 获取 font 的样式
         for( var i = 0;i<styleArr.length;i++ ){
-            this.font += this[styleArr[i]];
+            this.font += this[styleArr[i]] + " ";
         }
     }
+
+    this.getTextPos = function (posType, x, y, width, height, ctx, textWidth) {
+        
+        var reg = /\_/g;
+
+        var x,y; // 记录文字的起点坐标信息
+        var fontSize = parseInt(this.fontSize);
+
+        // if( !Util.isType(posType) == "String" && !reg.test( posType ) ){
+        //     throw new Error("posType is String");
+        // } 
+        
+        var posPart = posType.split("_"); // left_top  [left,top]; 
+
+        var xPos = getHorizontalCoordinate(posPart[1], x, width, textWidth );
+        var yPos = getVerticalCoordinate(posPart[0], y, height, fontSize );
+        return { x:xPos,y:yPos };
+        
+    }
+
+    function getHorizontalCoordinate(type,x,width,textWidth){ // 根据类型获取文字的 x 坐标
+        var defOffsetX = 0; // 默认偏移量
+        var offsetX;
+        switch (type) {
+            case "left":
+                offsetX = x - defOffsetX - textWidth + t.textOffsetX;
+                break;
+            case "center":
+                offsetX = x + width / 2 - textWidth / 2 + t.textOffsetX;
+                break;
+            case "right":
+                offsetX = x + defOffsetX + width + t.textOffsetX;
+                break;
+            default:
+                offsetX = x + width / 2 - textWidth / 2 + t.textOffsetX;  // 默认位置 水平在 中间
+                break;
+        }
+
+        return offsetX
+    }
+
+
+    function getVerticalCoordinate(type,y,height,fontSize) {
+        var defOffsetY = 0; // 默认偏移量
+        var offsetX;
+        switch (type) {
+            case "top":
+                offsetX = y - defOffsetY + t.textOffsetY;
+                break;
+            case "center":
+                offsetX = y + height / 2 + fontSize / 2 + t.textOffsetY;
+                break;
+            case "bottom":
+                offsetX = y + defOffsetY + height + fontSize + t.textOffsetY;
+                break;
+            default:
+                offsetX = y + defOffsetY + height + fontSize + t.textOffsetY; // 默认位置 竖直在 底部
+                break;
+        }
+
+        return offsetX
+    }
+
 
     this.getAttrFromOption(this,option);
     this.adjustFontSize(this.fontSize);
