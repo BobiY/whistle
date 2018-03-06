@@ -1,17 +1,3 @@
-/**
- * 1. 一种基本图形是一个类
- * 
- * 目前需要的  储存画布信息的类
- *            储存方块信息的类
- *            储存线信息的类
- * 将鼠标触发的各种事件做区分，在触发重绘时应根据事件类型和元素做出相应的动作
- * 什么清理图片缓存，怎么清除
- * 目前报错的地方还在少数，多了就需要整理类
- * 实现随机颜色
- * 下一步是关于文字的处理
- */
-
-
 
 
 (function(Window){
@@ -234,23 +220,6 @@ function Rect(option) { //
 
 }
 
-/**
- *  textLeft
- *  textRight
- *  textTop
- *  textBottom
- *  textPos = ["top_left","top_center","top_right","center_left","center_center","center_right","bottom_left","bottom_center","bottom_right"]
- * 
- *  ***以下是字体样式********************
- *  fontStyle 
- *  fontVariant 
- *  fontWeight 
- *  fontSize 
- *  fontFamily
- *  fontColor    
- *  
- * 
- */
 
 function RectMethod() {  // 储存方形画图的相关方法
     var textData = ["textOffsetX","textOffsetY","textPos"]; // 文字位置相关配置
@@ -446,7 +415,6 @@ var Util = { // 工具类  随机颜色
 function DrawText(option) {  // 将文字的画法函数直接
     var supportPos = ["center","left","right","top","bottom"]; // 支持的字符串位置
     var textStyle = ["hor", "vertical","italic"]  // 水平，竖直，倾斜  支持的文字显示样式
-    var reg = /\%/g;
     var reg1 = /\px/g;
     var t = this;
     this.textOffsetX = 0;
@@ -501,12 +469,12 @@ function DrawText(option) {  // 将文字的画法函数直接
 
     this.getTextPos = function (posType, x, y, width, height, ctx, textWidth) {
         
-        var reg = /\_/g;
+        var reg = /\_/g;  // 验证 posType 中是否存在下滑先，而且类型必须是 string
 
         var x,y; // 记录文字的起点坐标信息
         var fontSize = parseInt(this.fontSize);
 
-        // if( !Util.isType(posType) == "String" && !reg.test( posType ) ){
+        // if( !Util.isType(posType) == "String" && !reg.test( posType ) ){ // 此处做容错处理
         //     throw new Error("posType is String");
         // } 
         
