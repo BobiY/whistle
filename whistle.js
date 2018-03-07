@@ -179,6 +179,8 @@ function Stage(stageObject) { // 调节画布和图形的中间类
     }
     Window.$$whistle = stageObject;
     Stage.prototype.Rect = Rect;
+    Stage.prototype.Alink = Alink;
+    Stage.prototype.TextNode = TextNode;
 }
 
 
@@ -264,7 +266,7 @@ function RectMethod() {  // 储存方形画图的相关方法
         this.centerPos = this.getRectCenter(this.x, this.y, this.width,this.height)
         this.drawRect(ctx,bool)
         var option = this.getTextOption(this)
-        new DrawText(option).printText(this.x, this.y,this.width,this.height, this.text, ctx)
+        new DrawText(option).printText(this.x, this.y, this.width, this.height, this.text, ctx, this.isUnderLine)
         return this;
     }
 
@@ -339,7 +341,7 @@ function RectMethod() {  // 储存方形画图的相关方法
             ctx.drawImage(img, ele.x, ele.y);
         }
         var option = this.getTextOption(this)
-        new DrawText(option).printText(this.x, this.y, this.width, this.height, this.text, ctx);
+        new DrawText(option).printText(this.x, this.y, this.width, this.height, this.text, ctx,this.isUnderLine);
     }
 
 
@@ -413,8 +415,6 @@ var Util = { // 工具类  随机颜色
 
 
 function DrawText(option) {  // 将文字的画法函数直接
-    var supportPos = ["center","left","right","top","bottom"]; // 支持的字符串位置
-    var textStyle = ["hor", "vertical","italic"]  // 水平，竖直，倾斜  支持的文字显示样式
     var reg1 = /\px/g;
     var t = this;
     this.textOffsetX = 0;
@@ -424,8 +424,10 @@ function DrawText(option) {  // 将文字的画法函数直接
     this.fontVariant = "normal";
     this.fontWeight = "normal";
     this.fontSize = "12px";
+    this.fontColor = "#fff";
     this.fontFamily = "微软雅黑";
     this.textPos = "bottom_center";
+
     var textData = [ "left","right","top","bottom" ]
     var styleArr = ["fontStyle", "fontVariant", "fontWeight", "fontSize","fontFamily"];
     this.getAttrFromOption = function (context, option) {
@@ -439,15 +441,37 @@ function DrawText(option) {  // 将文字的画法函数直接
         return ctx.measureText(text).width;
     }
 
-    this.printText = function (x, y,width, height, text, ctx) { // x,y 是相对的小方块的位置  
+    // 获取加上样式后的字体宽度
+    this.getCalculateTextWidth = function (text,ctx) {
+        ctx.font = this.font ? this.font : "12px Consolas";
+        var textWidth = this.getTextWidth(text, ctx);
+        return textWidth;
+    }
+
+    // draw underLine
+
+    this.drawUnderLine = function (x,y,width,ctx) {
+        ctx.beginPath();
+        ctx.strokeStyle = this.fontColor ? this.fontColor : "#fff";
+        ctx.lineWidth = 2;
+        ctx.moveTo(x + 2, y + 12 + parseInt(this.fontSize));
+        ctx.lineTo(x + width + 6, y + 12 + parseInt(this.fontSize) );
+        ctx.stroke();
+        ctx.closePath();
+    }
+
+    this.printText = function (x, y,width, height, text, ctx,isUnderLine) { // x,y 是相对的小方块的位置  
         // 字体设置一定要在获取宽度之前
         ctx.beginPath();
         ctx.font = this.font ? this.font : "12px Consolas";
-        ctx.fillStyle = "#fff";
+        ctx.fillStyle = this.fontColor ? this.fontColor : "#fff";
         var textWidth = this.getTextWidth(text, ctx);
         var posObj = this.getTextPos(this.textPos,x,y,width,height,ctx,textWidth );
         ctx.fillText(text, posObj.x, posObj.y);
         ctx.closePath();
+        if( isUnderLine ){
+            this.drawUnderLine(x, y, textWidth,ctx);
+        }
     }
 
     this.adjustFontSize = function (fontSize) { //将 fontSize 调整成 数字 + px 的字符串形式
@@ -540,7 +564,106 @@ function WhistleAnimation(styleOption) {  // 运动类
     this.font = styleOption[""]
 }
 
+function Alink(option) {  // 超链接节点
+    this.x = 0;
+    this.y = 0;
+    this.text = "默认文字";
+    this.fontStyle = "normal";
+    this.fontVariant = "normal";
+    this.fontWeight = "700";
+    this.fontSize = "18px";
+    this.fontColor = "#00f";
+    this.fontFamily = "微软雅黑";
+    this.isUnderLine = true;
+    
+    if (Object.defineProperty) {
+        Object.defineProperty(this, "ctx", {
+            value: Window.$$whistle,
+            writable: false, // 不可写!
+            configurable: false,
+            enumerable: false
+        });
+    }
 
+    var textData = ["textOffsetX", "textOffsetY", "textPos"]; // 文字位置相关配置
+    var styleArr = ["fontStyle", "fontVariant", "fontWeight", "fontSize", "fontFamily", "fontColor"]; // 文字样式相关配置
+
+    this.getTextOption = function (context) {
+        var option = {};
+        var tmpArr = textData.concat(styleArr);
+        var len = tmpArr.length;
+        for (var i = 0; i < len; i++) {
+            var child = tmpArr[i];
+            context[child] && (option[child] = context[child]);
+        }
+        return option;
+    }
+
+    this.getAttrFromOption = function (context, option) {
+        for (var key in option) {
+            context[key] = option[key]
+        }
+    }
+
+    this.getAttrFromOption(this,option);
+    var options = this.getTextOption(this);
+    var text = new DrawText(options);
+
+    // 获取连接文字宽度
+    var textWidth = text.getCalculateTextWidth(this.text,this.ctx.content2D);
+
+    var rect =  new Rect({ 
+        x: this.x, 
+        y: this.y, 
+        width: textWidth + 8, 
+        height: parseInt(this.fontSize) + 16, 
+        fillColor: "rgba(255,255,255,0)",
+        text: this.text, 
+        fontSize: this.fontSize, 
+        textOffsetY: - (parseInt(this.fontSize) + 10),
+        fontColor:this.fontColor,
+        isUnderLine:this.isUnderLine  // 控制是否需要下滑线
+    });
+    
+    this.isUnderLine && rect.on("click",function (params) {  // 给超链接注册 click 事件
+        console.log("click")  // 具体执行的跳转逻辑
+    })
+
+    return rect;  // 将包装好的 方块元素返回
+
+}
+
+
+function TextNode(option) {  // 文本节点
+    this.x = 0;
+    this.y = 0;
+    this.text = "默认文字";
+    this.fontStyle = "normal";
+    this.fontVariant = "normal";
+    this.fontWeight = "700";
+    this.fontSize = "18px";
+    this.fontColor = "#fff";
+    this.fontFamily = "微软雅黑";
+
+    this.getAttrFromOption = function (context, option) {
+        for (var key in option) {
+            context[key] = option[key]
+        }
+    }
+
+    this.getAttrFromOption(this, option);
+
+    var text = new Alink({
+        x: this.x,
+        y: this.y,
+        text: this.text,
+        isUnderLine: false,  // 控制是否需要下滑线
+        fontColor:this.fontColor
+    });
+
+    return text;
+
+}
 
 
 
