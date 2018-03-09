@@ -3,6 +3,7 @@ import { Menu } from "antd";
 import menuConfing from './menu.config';
 import { Link } from "react-router-dom";
 const Item = Menu.Item;
+const SubMenu = Menu.SubMenu;
 
 export default class Menus extends Component {
     constructor(props) {
@@ -12,15 +13,25 @@ export default class Menus extends Component {
     getMenu(){
         return menuConfing.map( (item,i) => {
             return (
-            <Item key={i}>
-                <Link to = {item.path} >{item.name}</Link>
-            </Item>
+                <SubMenu key={i} title={<Link to={item.path} >{item.name}</Link> }>
+                        {item.child && this.getSubMenu(item.child,i)}
+                </SubMenu>
         )
         })
     }
 
+    getSubMenu(data,g){
+        return data.map( ( item,i ) =>{
+            return <Item key={`${g}--${i}`}>
+                <Link to={item.path} >{item.name}</Link>
+            </Item>
+
+        } )
+
+    }
+
     render() {
-        return <div><Menu >{this.getMenu()}</Menu></div>
+        return <div><Menu mode="inline">{this.getMenu()}</Menu></div>
 
     }
 }

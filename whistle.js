@@ -204,6 +204,13 @@ function Rect(option) { //
     this.orderDraw = true;
     this.textOffsetX = 0;
     this.textOffsetY = 0;
+    this.colorArr = []; // 储存渐变色位置和颜色的数组
+    this.shape = {
+        x: this.x,
+        y: this.y,
+        width: this.width,
+        height: this.height
+    }
     //this.ctx = Window.$$whistle;
     this.attrArr = ["width", "height", "x", "y", "id", "fillColor", "strokeColor", "textPos","centerPos","eventList"]
     /*************** 方块元素的基本信息 ****************/
@@ -227,9 +234,44 @@ function RectMethod() {  // 储存方形画图的相关方法
     var textData = ["textOffsetX","textOffsetY","textPos"]; // 文字位置相关配置
     var styleArr = ["fontStyle", "fontVariant", "fontWeight", "fontSize", "fontFamily","fontColor"]; // 文字样式相关配置
 
-    this.print = function (content) {
-        // 重绘的时候，如果有 src 则显然图片，如果没有则直接画方块
+    this.getGradColor =  function (type,colorArr) {  // 水平渐变  竖直渐变  斜向渐变  // 处理线性渐变的颜色分布及起始位置
+        // hLine vLine tLine 水平渐变  竖直渐变  斜向渐变
+        this.colorArr = colorArr;
+        var linearGradient1 = null;
+        switch (type) {
+            case "hLine":
+                linearGradient1 = createGradColorFromOption(this.x,this.y,this.x + this.width,this.y,this.colorArr,this.ctx.content2D)
+                break;
+            case "vLine":
+                linearGradient1 = createGradColorFromOption(this.x, this.y, this.x, this.y + this.height, this.colorArr, this.ctx.content2D)
+                break;
+            case "tLine":
+                linearGradient1 = createGradColorFromOption(this.x, this.y, this.x + this.width, this.y + this.height, this.colorArr, this.ctx.content2D)
+                break;
+            default:
+                linearGradient1 = "#fff";
+                break;
+        }
+
+        return linearGradient1;
+        
     }
+
+
+    function createGradColorFromOption(x,y,x1,y1,colorArr,context) {  // colorArr ==>[ [ 0,"#fff" ] ];
+
+        var linearGradient1 = context.createLinearGradient(x,y,x1,y1);
+        if(  Util.isType(colorArr) != "Array" ){
+            // 做容错性处理
+        }
+
+        for(var i = 0; i< colorArr.length;i++ ){
+            linearGradient1.addColorStop( colorArr[i][0], colorArr[i][1] );
+        }
+
+        return linearGradient1
+    }
+
 
     this.getTextOption = function (context) {
         var option = {};
@@ -410,6 +452,14 @@ var Util = { // 工具类  随机颜色
             var b = Math.floor(Math.random() * 256);
             return "rgba(" + r + ',' + g + ',' + b + ',' + opacity +")";
         }
+    },
+    getGradColor:function (context) {
+        var linearGradient1 = context.createLinearGradient(0, 0, 100, 0);
+        linearGradient1.addColorStop(0, 'rgb(255, 0, 0)');
+        linearGradient1.addColorStop(0.5, 'rgb(  0, 0, 255)');
+        linearGradient1.addColorStop(1, 'rgb(  0, 0, 0)');
+
+        return linearGradient1
     }
 }
 
@@ -454,8 +504,8 @@ function DrawText(option) {  // 将文字的画法函数直接
         ctx.beginPath();
         ctx.strokeStyle = this.fontColor ? this.fontColor : "#fff";
         ctx.lineWidth = 2;
-        ctx.moveTo(x + 2, y + 12 + parseInt(this.fontSize));
-        ctx.lineTo(x + width + 6, y + 12 + parseInt(this.fontSize) );
+        ctx.moveTo(x + 6, y + 12 + parseInt(this.fontSize));
+        ctx.lineTo(x + width + 12, y + 12 + parseInt(this.fontSize) );
         ctx.stroke();
         ctx.closePath();
     }
@@ -567,7 +617,7 @@ function WhistleAnimation(styleOption) {  // 运动类
 function Alink(option) {  // 超链接节点
     this.x = 0;
     this.y = 0;
-    this.text = "默认文字";
+    this.text = "www.yaoshuaibo.com";
     this.fontStyle = "normal";
     this.fontVariant = "normal";
     this.fontWeight = "700";
@@ -575,7 +625,7 @@ function Alink(option) {  // 超链接节点
     this.fontColor = "#00f";
     this.fontFamily = "微软雅黑";
     this.isUnderLine = true;
-    
+    this.features = "blank";
     if (Object.defineProperty) {
         Object.defineProperty(this, "ctx", {
             value: Window.$$whistle,
@@ -626,7 +676,7 @@ function Alink(option) {  // 超链接节点
     });
     
     this.isUnderLine && rect.on("click",function (params) {  // 给超链接注册 click 事件
-        console.log("click")  // 具体执行的跳转逻辑
+        window.open("http://" + this.text, "", this.features)  // 具体执行的跳转逻辑
     })
 
     return rect;  // 将包装好的 方块元素返回
@@ -644,7 +694,7 @@ function TextNode(option) {  // 文本节点
     this.fontSize = "18px";
     this.fontColor = "#fff";
     this.fontFamily = "微软雅黑";
-
+    this.isUnderLine = false
     this.getAttrFromOption = function (context, option) {
         for (var key in option) {
             context[key] = option[key]
@@ -657,7 +707,7 @@ function TextNode(option) {  // 文本节点
         x: this.x,
         y: this.y,
         text: this.text,
-        isUnderLine: false,  // 控制是否需要下滑线
+        isUnderLine: this.isUnderLine,  // 控制是否需要下滑线
         fontColor:this.fontColor
     });
 

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>canvas 实现图片剪裁</title>
 </head>
 <body>
     <style type="text/css">
@@ -14,48 +14,74 @@
         </style>
         
         <div class="canvas-box"> 
-         <canvas id="cvs" width="500" height="400">不支持canvas</canvas>
+         <canvas id="cvs" width="500" height="400" style="background:url(./a.png);background-size:500px 400px;">不支持canvas</canvas>
         </div>
-        
+        <script src="./test.js"></script>
         <script>
-        var cvs = document.getElementById('cvs');
-        var ctx = cvs.getContext('2d');
-        // 封装绘制的图形
-        function draw () {
-          ctx.fillStyle = '#000';
-          ctx.beginPath();
-          ctx.rect(0,0,30,30)
-          ctx.closePath();
-        }
-        function circle () {
-          ctx.fillStyle = '#000';
-          ctx.beginPath();
-          ctx.arc(100,200,50,0,Math.PI*2)
-          ctx.closePath();
-        }
-        // 初始化绘制图形
-        draw();
-        ctx.fill()
-        circle();
-        ctx.fill()
-        var fns = [draw,circle];
-        // 监听鼠标事件
-        cvs.onmousemove = function (e) {
-          // 得到鼠标的坐标
-          var x = e.pageX, y =e.pageY;
-          ctx.clearRect(0,0,400,300)
-          // 遍历绘制图形
-          for(var i = fns.length; i--;) {
-            fns[i]();
-            // 每绘制一个图形就判断一次当前鼠标的坐标是否在这个图形上，然后进行自定义操作
-            if(ctx.isPointInPath(x,y)) {
-              ctx.fillStyle = "#f00"
-            } else {
-              ctx.fillStyle = "#000"
-            }
-            ctx.fill()
-          }
-        }
+          // var canvas = document.getElementById("cvs");
+          // var ctx = canvas.getContext("2d");
+          // var img = new Image();
+          // img.src = "./a.png";
+          // var image  = null;
+          // // img.onload = function () {
+          // //   image = this;
+          // //   canvas.width = this.width;
+          // //   canvas.height = this.height;
+          // //   ctx.beginPath();
+          // //   ctx.fillStyle = "rgba(0,0,0,0.5)";
+          // //   ctx.rect(0,0,canvas.width,canvas.height);
+          // //   ctx.fill();
+          // //   ctx.beginPath();
+          // //   //ctx.globalCompositeOperation = "destination-out"
+          // //   ctx.strokeStyle = "#000";
+          // //   ctx.rect(50,50,50,50);
+          // //   ctx.stroke();
+          // //   ctx.clip();
+          // //   ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+          // //   ctx.closePath();
+          // // }
+
+          // // 给背景图片加上灰色蒙层
+          // ctx.beginPath();
+          // ctx.fillStyle = "rgba(0,0,0,0.5)";
+          // ctx.rect(0,0,canvas.width,canvas.height);
+          // ctx.fill();
+          // ctx.beginPath();
+
+          // ctx.beginPath();
+
+          // // 有 8 个小圆环控制伸拉方向  8 个小圆环位于整个方形区域的节点位置
+
+          // var arcArr = [ 
+          //     [20,20,4], // x,y
+          //     [38,20,4], // x + width/2 ,y   
+          //     [56,20,4], // x + width, y
+          //     [56,38,4], // x + width, y+heigth/2
+          //     [56,56,4], // x + width,y+height
+          //     [38,56,4], // x + width/2,y + height
+          //     [20,56,4], // x,y + height
+          //     [20,38,4], // x,y + height
+          //     [20,20,4]  //  x,y
+          //  ]
+            
+          //  ctx.strokeStyle = "#fff";
+          //  for( var i = 0; i< arcArr.length-1; i++ ){
+          //   ctx.beginPath();
+          //    ctx.arc( arcArr[i][0], arcArr[i][1], 3,0,Math.PI * 2 )
+          //    ctx.stroke()
+          //    ctx.closePath();
+          //  }
+           
+          //  ctx.beginPath();
+          //  ctx.moveTo(arcArr[0][0], arcArr[0][1])
+          //  for( var i=1;i<arcArr.length;i++ ){
+          //    ctx.lineTo(arcArr[i][0], arcArr[i][1])
+          //  }
+          //  //ctx.lineTo( arcArr[0][0], arcArr[0][1] )
+          //  ctx.stroke()
+          //  ctx.closePath();
+
+
         </script> 
 </body>
 </html>

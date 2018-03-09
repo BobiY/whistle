@@ -2,54 +2,86 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './style/index.css';
 import App from './App';
+import { Provider } from "react-redux";
+import { createStore, combineReducers, applyMiddleware } from "redux";
 import Rect from "./pages/Rect/Rect";
 import Text from "./pages/Text/Text";
-import Menus from "./menu/menu";
+import TextPos from "./pages/Rect/TextPos";
+import RectShow from "./pages/Rect/RectShow";
 import registerServiceWorker from './registerServiceWorker';
-import { BrowserRouter as Router, Route, Link  } from "react-router-dom";
-import { Provider } from 'react-redux'
-import zhCN from 'antd/lib/locale-provider/zh_CN';
-import moment from 'moment';
-import 'moment/locale/zh-cn';
+import { BrowserRouter as Router, Route, Redirect } from "react-router-dom";
+// import { Provider } from 'react-redux'
 import 'antd/dist/antd.css';
-import { Row,Col } from "antd";
 // then our route config
+
+function reducer(state, action) {
+    switch (action.type) {
+        case 1:
+            console.log(action.data)
+            break;
+    
+        default:
+            console.log(0)
+            break;
+    }
+}
+
+const store = createStore(reducer);
+
 const routes = [
     {
-        path: "/Rect",
-        component: Rect
+        path:"/",
+        render: () => <Redirect to="/Rect/Rect" />
     },
     {
-        path: "/text",
+        path: "/Rect",
+        render: () => <Redirect to="/Rect/Rect" />
+    },
+    {
+        path: "/Rect/Rect",
+        component: RectShow
+    },
+    {
+        path: "/Rect/Text",
+        component: TextPos
+    },
+    {
+        path: "/Text",
         component: Text,
-        // routes: [
-        //     {
-        //         path: "/tacos/bus",
-        //         component: App
-        //     },
-        //     {
-        //         path: "/tacos/cart",
-        //         component: Rect
-        //     }
-        // ]
+        routes: [
+            {
+                path: "/tacos/bus",
+                component: "<div>111111111</div>"
+            },
+            {
+                path: "/tacos/cart",
+                component: Rect
+            }
+        ]
     }
 ];
 
+const RouteWithSubRoutes = (route) => {
+    if( route.render ){
+        return <Route exact path={route.path} render={ route.render } />
+    }else{
+        return <Route exact path={route.path} render={props => (
+            <route.component {...props} routes={route.routes} />
+        )} />
+    }
+}
 
 
 const RouteConfigExample = () => (
-    <Router>
-        <div>
-            <Row>
-                <Col span={ 6 }>
-                    <Menus />
-                </Col>
-                <Col span = { 18 }>
-                    {routes.map((route, i) => <Route key={i} {...route} />)}
-                </Col>
-            </Row>
-        </div>
-    </Router>
+    <Provider store = {store}>
+        <Router>
+            <div>
+                <App>
+                    {routes.map((route, i) => <RouteWithSubRoutes key={i} {...route} />)}
+                </App>
+            </div>
+        </Router>
+    </Provider>
 );
 
 ReactDOM.render(

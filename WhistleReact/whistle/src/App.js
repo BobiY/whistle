@@ -1,22 +1,23 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './style/App.css';
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import { Row, Col } from "antd";
+import Menus from "./menu/menu";
+
+
+
 
 class App extends Component {
   render() {
     return (
       <div>
-        <ul>
-          <li>
-            <Link to="/tacos/bus">Bus</Link>
-          </li>
-          <li>
-            <Link to="/tacos/cart">Cart</Link>
-          </li>
-        </ul>
-        {"App"}
-        {this.props.children}
+        <Row>
+          <Col span={6}>
+            <Menus />
+          </Col>
+          <Col span = {8}>
+             {this.props.children}
+          </Col>
+        </Row>
       </div>
     );
   }

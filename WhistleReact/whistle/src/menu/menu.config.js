@@ -2,8 +2,18 @@
 
 const menuConfing =[
     {
-        path: "/rect",
-        name: "方形节点"
+        path: "/Rect",
+        name: "方形节点",
+        child:[
+            {
+                path: "/Rect/Rect",
+                name:"各类方块"
+            },
+            {
+                path:"/Rect/Text",
+                name:"文本位置"
+            }
+        ]
     },
     {
         path: "/Text",
