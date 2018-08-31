@@ -1,4 +1,4 @@
-// 基类
+// 基本的构造类
 
 
 function Whistle(canvas) { // 初始类
@@ -16,6 +16,8 @@ function Whistle(canvas) { // 初始类
     this.mousePos = { x: 0, y: 0 };
     var cxt = this.content2D;
     var currentArr = [];
+
+    // 获取 canvas 元素的位置信息  getBoundingClientRect 属于内置方法
     var canvasBoundingClientRect = this.canvas.getBoundingClientRect();
 
 

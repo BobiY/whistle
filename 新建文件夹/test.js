@@ -169,9 +169,7 @@ window.onload = function () {
     })
 
     function drawRect(x,y,width,height) {
-        //ctx.save();
         ctx.clearRect(0,0,canvas.width,canvas.height);
-        //ctx.globalCompositeOperation = 'destination-out';
         ctx.beginPath();
         ctx.fillStyle = "rgba(0,0,0,0.5)";
         ctx.rect(0, 0, canvas.width, canvas.height);
@@ -189,16 +187,16 @@ window.onload = function () {
               [x, y + height/2,4,"Lx_"], // x,y + height
               [x, y, 4, "Lx_yT"], // x,y
            ]
-        ctx.save();
-        ctx.globalCompositeOperation = 'destination-out';
+
            ctx.strokeStyle = "#fff";
            for( var i = 0; i< arcArr.length; i++ ){
              ctx.beginPath();
              ctx.arc( arcArr[i][0], arcArr[i][1], r,0,Math.PI * 2 )
-             ctx.fill()
+             ctx.stroke()
              ctx.closePath();
            }
-
+           ctx.save();
+            ctx.globalCompositeOperation = 'destination-out';
            ctx.beginPath();
            ctx.moveTo(arcArr[0][0], arcArr[0][1])
            for( var i=1;i<arcArr.length;i++ ){
@@ -251,10 +249,10 @@ window.onload = function () {
     // var dataURL = ctx.toDataURL("image/png", 1.0);
     // var file1 = convertBase64UrlToBlob(dataURL, "png");
 
-    // btn1.addEventListener("click",function (params) {
-    //     // var data = canvas1.toDataURL();
-    //     // var file = onvertBase64UrlToBlob(data, "png");
+    btn1.addEventListener("click",function (params) {
+        // var data = canvas1.toDataURL();
+        // var file = onvertBase64UrlToBlob(data, "png");
 
-    //     // 功能尚未实现  cors 限制
-    // })
+        // 功能尚未实现  cors 限制
+    })
 }
