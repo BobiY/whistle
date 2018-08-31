@@ -1,1 +1,5 @@
-// 工具
+// 工具类
+
+export default class Util {
+
+}
