@@ -3,4 +3,4 @@
 import BaseWhistle from "./base";
 
 
-module.exports = BaseWhistle;
+window.O = BaseWhistle;
