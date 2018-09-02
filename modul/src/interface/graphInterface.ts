@@ -6,7 +6,7 @@ import BaseWhistle from "../base";
 // 方形外传属性接口
 export interface IRect extends IGraphCommon {
     width: number,
-    heigth: number,
+    height: number,
     x: number,
     y: number,
 }

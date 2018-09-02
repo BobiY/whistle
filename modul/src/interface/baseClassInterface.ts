@@ -5,5 +5,12 @@ export interface IBaseClassOption {
 
 // 基类的属性接口
 export interface IBaseClassProps {
-    paintbrush: Element,  // 储存 canvas 元素
+    paintbrush: HTMLElement,  // 储存 canvas 元素
+}
+
+
+// 鼠标位置接口
+export interface IMousePos {
+    x: number,
+    y: number
 }
