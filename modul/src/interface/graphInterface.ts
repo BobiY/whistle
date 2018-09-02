@@ -26,3 +26,24 @@ export interface IArc extends IGraphCommon {
     cy: number,
     cr: number, 
 }
+
+// 圆形类构造需要的参数
+export interface IArcClass {
+    content: BaseWhistle,
+    option: IArc
+}
+
+
+// 线条的外传属性接口
+export interface ILine extends IGraphCommon {
+    sx: number,
+    sy: number,
+    fx: number,
+    fy: number
+}
+
+// 线条类需要的参数
+export interface ILineClass {
+    content: BaseWhistle,
+    option: ILine
+}

@@ -5,4 +5,12 @@ export default class React extends GraphBase{
     constructor(config: IRectClass) {
         super();
     }
+
+    draw() {
+
+    }
+
+    pointInGraph() :boolean {
+        return true;
+    }
 }
