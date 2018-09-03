@@ -9,11 +9,15 @@ export default class BaseWhistle implements IBaseClassProps{
     public paintbrush: HTMLCanvasElement;
     private mousePos: IMousePos;
     public ctx: CanvasRenderingContext2D;
+    public eventCallback: { [propsName: string] : Array<(e?: Event) => void>  };
     constructor(option: IBaseClassOption) {
         this.renderWelcome();
         this.paintbrush = document.getElementById(option.id) as HTMLCanvasElement; // 获取 canvas 元素  添加断言可以添加自己的类型 防止类型不同意而不能通过编译
         this.ctx = this.paintbrush.getContext('2d'); // 画笔工具
         this.mousePos = {x: -1, y: -1};
+        this.eventCallback = {
+            "a": [() => {}]
+        }
     }
 
     renderWelcome() {
@@ -24,8 +28,16 @@ export default class BaseWhistle implements IBaseClassProps{
         console.log("此方法将在图形的属性重新设置时进行图形重绘")
     }
 
-    mouseEventBind() {
-        console.log("此方法将自动在实例化舞台对象时绑定通用鼠标事件到 canvae 元素上")
+    private mouseEventBind() {
+        // 目前支持的事件类型
+        const supportEventTypes: Array<string> = ["mouseup", "mousedown", "mouseover", "click", "dblclick"]
+        const rootEle: HTMLCanvasElement = this.paintbrush;  // 根 Canvas 元素
+        supportEventTypes.forEach( (item: string) => {
+            this.eventCallback[item] = []; // 初始化图形注册的时间处理函数
+            rootEle.removeEventListener(item, () => {console.log("event has removed")}) // 在初始化时，先移除用户提前绑定的事件
+            rootEle.addEventListener(item, (e) => { this.eventCallback[item].forEach( (sub: (e: Event) => void) => {sub(e)} )}) // 执行注册事件回调
+        })
+
     }
 
     /********图形相关的方法********/

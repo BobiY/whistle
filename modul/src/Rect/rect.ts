@@ -7,6 +7,7 @@ export default class React extends GraphBase{
     posInfor: IPosInfor;
     drawWay: string;
     color: string;
+    eventCollect: { [propsName: string] : Array<(e?: Event) => void>  }
     constructor(config: IRectClass) {
         super();
         this.ctx = config.content.ctx;
@@ -14,6 +15,7 @@ export default class React extends GraphBase{
         this.posInfor = { x, y, width, height }
         this.drawWay = config.option.drawWay;
         this.color = config.option.color;
+        this.eventCollect = config.content.eventCallback;
     }
 
     draw() {
@@ -42,5 +44,13 @@ export default class React extends GraphBase{
         }
 
         return true;
+    }
+
+    on(eventType: string, callBack: (e?: Event) => void) {
+        if ( this.eventCollect[eventType] ) {
+            this.eventCollect[eventType].push(callBack.bind(this));
+        } else {
+            console.log(`${eventType} 事件暂不支持`)
+        }
     }
 }
