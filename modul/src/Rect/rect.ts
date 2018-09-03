@@ -1,13 +1,14 @@
 import GraphBase from "../graphBase";
 import { IRectClass } from "../interface/graphInterface";
 import { IPosInfor } from "./Interface";
+import { IEventFunc } from "../interface/baseClassInterface";
 // 方块类
 export default class React extends GraphBase{
     ctx: CanvasRenderingContext2D;
     posInfor: IPosInfor;
     drawWay: string;
     color: string;
-    eventCollect: { [propsName: string] : Array<(e?: Event) => void>  }
+    eventCollect: { [propsName: string] : Array<IEventFunc>  }
     constructor(config: IRectClass) {
         super();
         this.ctx = config.content.ctx;
@@ -48,7 +49,11 @@ export default class React extends GraphBase{
 
     on(eventType: string, callBack: (e?: Event) => void) {
         if ( this.eventCollect[eventType] ) {
-            this.eventCollect[eventType].push(callBack.bind(this));
+            const tmpObj: IEventFunc = {
+                func: callBack.bind(this),
+                isInside: false
+            }
+            this.eventCollect[eventType].push(tmpObj);
         } else {
             console.log(`${eventType} 事件暂不支持`)
         }

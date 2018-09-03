@@ -1,9 +1,9 @@
 // 线条
 import GraphBase from "./graphBase";
 import { ILineClass } from "./interface/graphInterface";
-
+import { IEventFunc } from "./interface/baseClassInterface";
 export default class Line extends GraphBase{
-    eventCollect: { [name: string]: Array<(e?: Event) => void> }
+    eventCollect: { [name: string]: Array<IEventFunc> }
     constructor(option: ILineClass) {
         super()
         this.eventCollect = option.content.eventCallback;
@@ -19,7 +19,11 @@ export default class Line extends GraphBase{
 
     on(eventType: string, callBack: (e?: Event) => void) {
         if ( this.eventCollect[eventType] ) {
-            this.eventCollect[eventType].push(callBack.bind(this));
+            const tmpObj: IEventFunc = {
+                func: callBack.bind(this),
+                isInside: false
+            }
+            this.eventCollect[eventType].push(tmpObj);
         } else {
             console.log(`${eventType} 事件暂不支持`)
         }

@@ -14,3 +14,10 @@ export interface IMousePos {
     x: number,
     y: number
 }
+
+
+
+export interface IEventFunc {
+    isInside: boolean;
+    func: (e?: Event) => void
+}
