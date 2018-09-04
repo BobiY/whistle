@@ -6,6 +6,8 @@ export default class Util {
     }
 
     calcSumOfSquare(x: number, y: number) { // 计算平方和
-        
+
     }
+
+    readOnly(content: Class)
 }

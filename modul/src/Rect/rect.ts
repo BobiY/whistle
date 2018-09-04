@@ -3,12 +3,13 @@ import { IRectClass } from "../interface/graphInterface";
 import { IPosInfor } from "./Interface";
 import { IEventFunc } from "../interface/baseClassInterface";
 // 方块类
-export default class React extends GraphBase{
+export default class Rect extends GraphBase{
     ctx: CanvasRenderingContext2D;
     posInfor: IPosInfor;
     drawWay: string;
     color: string;
-    eventCollect: { [propsName: string] : Array<IEventFunc>  }
+    eventCollect: { [propsName: string] : Array<IEventFunc>  };
+    mouseInside: boolean;
     constructor(config: IRectClass) {
         super();
         this.ctx = config.content.ctx;
@@ -17,6 +18,7 @@ export default class React extends GraphBase{
         this.drawWay = config.option.drawWay;
         this.color = config.option.color;
         this.eventCollect = config.content.eventCallback;
+        this.mouseInside = false;  // 图形自己维护鼠标是否在自己的身上
     }
 
     draw() {
@@ -40,18 +42,19 @@ export default class React extends GraphBase{
 
     pointInGraph(mx: number, my: number) :boolean {
         const { x, y, width, height } = this.posInfor;
+        let isInside: boolean = true; // 假定鼠标在当前元素上
         if ( mx < x || mx > x + width || my < y  || my > y + height  ) {
-            return false;
+            isInside =  false; // 不在的话将状态置为 false
         }
-
-        return true;
+        this.mouseInside = isInside;
+        return isInside;
     }
 
-    on(eventType: string, callBack: (e?: Event) => void) {
+    on(eventType: string, callBack: (e?: Event) => void ) {
         if ( this.eventCollect[eventType] ) {
             const tmpObj: IEventFunc = {
                 func: callBack.bind(this),
-                isInside: false
+                isInside: this.mouseInside
             }
             this.eventCollect[eventType].push(tmpObj);
         } else {
