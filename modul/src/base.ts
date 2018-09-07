@@ -25,7 +25,6 @@ export default class BaseWhistle implements IBaseClassProps{
 
     renderWelcome() {
         console.log("welcome to whistle")
-        Promise.resolve();
     }
 
     /***
@@ -37,6 +36,7 @@ export default class BaseWhistle implements IBaseClassProps{
      */
     reDraw() {  // 这里会设想两种方式的重绘
         console.log("此方法将在图形的属性重新设置时进行图形重绘");
+        Promise.resolve().then( () => { console.log("在这里执行重绘操作") } );
     }
 
     private mouseEventBind() {
