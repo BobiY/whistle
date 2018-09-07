@@ -20,11 +20,12 @@ export default class BaseWhistle implements IBaseClassProps{
             isInside: true,
             func: this.mouseMove.bind(this)
         }]}
-        new ErrorBase().checkWithAndHeight(this.paintbrush);
+        new ErrorBase().checkWithAndHeight(this.paintbrush); // canvas 元素检测
     }
 
     renderWelcome() {
         console.log("welcome to whistle")
+        Promise.resolve();
     }
 
     /***
@@ -35,7 +36,7 @@ export default class BaseWhistle implements IBaseClassProps{
      * 5. 用户自己调用，支持 函数和 点 改变属性两种方式
      */
     reDraw() {  // 这里会设想两种方式的重绘
-        console.log("此方法将在图形的属性重新设置时进行图形重绘")
+        console.log("此方法将在图形的属性重新设置时进行图形重绘");
     }
 
     private mouseEventBind() {
