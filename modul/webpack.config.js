@@ -23,6 +23,6 @@ module.exports = {
         ]
     },
     resolve: {
-        extensions: ['.js', '.ts','.json'],
-    },
+        extensions: ['.ts', '.js', '.json', '.vue', '.scss', '.css']
+    }
 }

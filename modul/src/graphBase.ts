@@ -1,7 +1,8 @@
 // 各类图形的基类
 
-export default abstract class GraphBase{
+export default abstract class GraphBase<T>{
     id: number;  // 标记每个图形的 id 保证去唯一性
+    props: T;
     constructor() {
         this.id = new Date().getTime()*Math.random();
     }

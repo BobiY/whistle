@@ -2,7 +2,7 @@
 import GraphBase from "./graphBase";
 import { ILineClass } from "./interface/graphInterface";
 import { IEventFunc } from "./interface/baseClassInterface";
-export default class Line extends GraphBase{
+export default class Line extends GraphBase<any>{
     eventCollect: { [name: string]: Array<IEventFunc> }
     constructor(option: ILineClass) {
         super()

@@ -7,16 +7,19 @@
     <title>Document</title>
     <style>
         #canvas{
-            border: 2px solid #333;
+            width: 500px;
+            height: 500px;
+            border: 1px solid #333;
         }
     </style>
 </head>
 <body>
-    <canvas id="canvas" width="800" height="500"></canvas>
+    <canvas id="canvas" height=500 width=500></canvas>        
 </body>
 <script src="./dist/whistle.js"></script>
 <script>
-    var stage = new Stage({id:"canvas"})
-    var rect = stage.Rect({x: 50, y: 50, width: 50, height: 50, color: "#333"})
+    const stage = new Stage("canvas");
+    const rect = stage.Rect({x:50, y:10, width:50, height:50, color:"#000", drawWay:"fill"});
+    const arc = stage.Arc({cx:100, cy:100, cr:30, color:"red", drawWay:"fill"})
 </script>
 </html>

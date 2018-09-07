@@ -1,4 +1,4 @@
-// 基类
+// 暴露的全局对象
 
 import BaseWhistle from "./base";
 
