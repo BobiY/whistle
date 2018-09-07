@@ -17,6 +17,7 @@ export default class React extends GraphBase{
         this.drawWay = config.option.drawWay;
         this.color = config.option.color;
         this.eventCollect = config.content.eventCallback;
+        this.draw();
     }
 
     draw() {
@@ -25,15 +26,15 @@ export default class React extends GraphBase{
         ctx.save(); 
         ctx.beginPath();
         switch(this.drawWay) {
-            case "fill":
-                ctx.fillStyle = this.color;
-                ctx.fillRect(x, y, width, height);
+            case "stroke":
+                ctx.strokeStyle = this.color;
+                ctx.strokeRect(x, y, width, height);
                 break;
             default:
-                ctx.strokeStyle = this.color;
-                ctx.rect(x, y, width, height);
+                ctx.fillStyle = this.color;
+                ctx.fillRect(x, y, width, height);
         }
-        ctx.rect(x, y, width, height);
+        //ctx.rect(x, y, width, height);
         ctx.closePath();
         ctx.restore();
     }

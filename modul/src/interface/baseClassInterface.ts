@@ -1,3 +1,5 @@
+import Event from "../event";
+
 // 基类的配置参数接口
 export interface IBaseClassOption {
     id: string,  // canvas 元素的 id
