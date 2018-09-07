@@ -2,7 +2,7 @@ const path = require("path")
 module.exports = {
     mode: "development",
     devtool: 'source-map',
-    entry: "./src/index",
+    entry: "./src/index.ts",
     output: {
         path: path.resolve( __dirname, 'dist' ),
         filename: "whistle.js"
@@ -17,5 +17,8 @@ module.exports = {
                 exclude: /node_modules/
             }
         ]
+    },
+    resolve: {
+        extensions: ['.ts', '.js', '.json', '.vue', '.scss', '.css']
     }
 }
