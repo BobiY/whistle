@@ -21,5 +21,6 @@ export interface IMousePos {
 
 export interface IEventFunc {
     isInside: boolean;
-    func: (e?: Event) => void
+    func: (e?: Event) => void,
+    content?: any
 }

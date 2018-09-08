@@ -5,41 +5,53 @@
 import GraphBase from "./graphBase";
 import { IArcClass } from "./interface/graphInterface";
 import { IEventFunc } from "./interface/baseClassInterface";
-interface IProps{
-    eventCollect: { [name: string]: Array<IEventFunc> }
-    posInfor: { cx: number, cy: number, cr:number }
-    color: string;
+import { ISelfEvent } from "./interface/SelfEvent";
+export default class Circle extends GraphBase {
+    isInside: boolean;
+    x: number;
+    y: number;
+    r: number;
+    drx: number;
+    dry: number;
+    canDrap: boolean;
     drawWay: string;
-    readonly ctx: CanvasRenderingContext2D
-}
-export default class Circle extends GraphBase<IProps> {
+    color: string;
+    optionDrap: boolean;
+    eventCollect: { [propsName: string] : Array<IEventFunc>};
+    ctx: CanvasRenderingContext2D;
     constructor(option: IArcClass) {
         super();
         const { cx, cy ,cr } = option.option;
-        this.props = {
-            eventCollect: option.content.eventCallback,
-            posInfor: { cx, cy, cr },
-            color: option.option.color,
-            drawWay: option.option.drawWay,
-            ctx: option.content.ctx
-        }
+        this.x = cx;
+        this.y = cy;
+        this.r = cr;
+        this.drx = 0;
+        this.dry = 0;
+        this.drawWay = option.option.drawWay || "fill";
+        this.color = option.option.color || "#333";
+        this.ctx = option.content.ctx;
+        this.eventCollect = option.content.eventCallback;
+        this.isInside = false;
+        this.canDrap = false;
+        this.optionDrap = option.option.canDrap;
         this.draw();
+        this.registeredInitEvent();
     }
 
     draw() {
-        const ctx: CanvasRenderingContext2D = this.props.ctx;
-        const { cx, cy, cr } = this.props.posInfor;
+        const ctx: CanvasRenderingContext2D = this.ctx;
+        const { x, y, r } = this;
         ctx.save(); 
         ctx.beginPath();
-        switch(this.props.drawWay) {
+        switch(this.drawWay) {
             case "fill":
-                ctx.fillStyle = this.props.color;
-                ctx.arc(cx, cy, cr, 0,2*Math.PI);
+                ctx.fillStyle = this.color;
+                ctx.arc(x, y, r, 0,2*Math.PI);
                 ctx.fill();
                 break;
             default:
-                ctx.strokeStyle = this.props.color;
-                ctx.arc(cx, cy, cr, 0,2*Math.PI);
+                ctx.strokeStyle = this.color;
+                ctx.arc(x, y, r, 0,2*Math.PI);
                 ctx.stroke();
         }
         ctx.closePath();
@@ -47,24 +59,48 @@ export default class Circle extends GraphBase<IProps> {
     }
 
     pointInGraph(mx: number, my:number) :boolean{
-        const { cx, cy, cr } = this.props.posInfor;
-        const littleX = Math.abs(cx-mx);
-        const littleY = Math.abs(cy-my);
-        if ( (littleX * littleX + littleY * littleY) > cr * cr ) {
+        const { x, y, r } = this;
+        const littleX = Math.abs(x-mx);
+        const littleY = Math.abs(y-my);
+        if ( (littleX * littleX + littleY * littleY) > r * r ) {
             return false;
         }
         return true; 
     }
 
-    on(eventType: string, callBack: (e?: Event) => void) {
-        if ( this.props.eventCollect[eventType] ) {
+    on(eventType: string, callBack: (e?: ISelfEvent) => void) {
+        if ( this.eventCollect[eventType] ) {
             const tmpObj: IEventFunc = {
                 func: callBack.bind(this),
-                isInside: false
+                isInside: this.isInside,
+                content: this,
             }
-            this.props.eventCollect[eventType].push(tmpObj);
+            this.eventCollect[eventType].push(tmpObj);
         } else {
             console.log(`${eventType} 事件暂不支持`)
         }
     }
+
+    /**
+     * 需要给每个图形注册基本的拖拽事件
+     * 在 mousedown 事件里要改变图形的拖拽状态 表示此时是可拖拽的  用于改变图形的拖拽状态   保存鼠标位置和当前圆形中心点的坐标差
+     * 在 mousemove 事件里面改变图形的位置信息
+     * 在 mouseup 事件里面改变图形的拖拽状态  解除拖拽状态
+     */
+
+    drapMouseDown(selfEvent: ISelfEvent) {
+        this.drx = selfEvent.mouseX - this.x;
+        this.dry = selfEvent.mouseY - this.y;
+        this.canDrap = true;
+    }
+
+    drapMouseUp() {
+        this.canDrap = false;
+    }
+
+    registeredInitEvent() { 
+        this.on( "mousedown", this.drapMouseDown.bind(this) );
+        this.on( "mouseup", this.drapMouseUp.bind(this) );
+    }
+
 }

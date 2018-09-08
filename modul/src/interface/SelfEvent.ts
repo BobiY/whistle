@@ -11,5 +11,5 @@ interface ICanvasInfo{
 export interface ISelfEvent{
     mouseX: number;
     mouseY: number;
-    canvasInFo: ICanvasInfo;
+    //canvasInFo: ICanvasInfo;
 }

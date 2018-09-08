@@ -2,42 +2,55 @@ import GraphBase from "../graphBase";
 import { IRectClass } from "../interface/graphInterface";
 import { IPosInfor } from "./Interface";
 import { IEventFunc } from "../interface/baseClassInterface";
+import { ISelfEvent } from "../interface/SelfEvent";
 // 方块类
-interface IProps{
-    readonly ctx: CanvasRenderingContext2D;  // 画笔工具
-    posInfor: IPosInfor;  // 图形的基本位置信息
-    drawWay: string;  // 描边还是填充
-    color: string;  // 图形的颜色
+export default class Rect extends GraphBase{
+    isInside :boolean;
+    x: number;
+    y: number;
+    drx: number;
+    dry: number;
+    width: number;
+    height: number;
+    drawWay: string;
+    color: string;
+    canDrap: boolean;
+    optionDrap: boolean;
     eventCollect: { [propsName: string] : Array<IEventFunc>  };  // 图像上注册的鼠标事件
-    mouseInside: boolean;  // 鼠标是否在图像上
-}
-export default class Rect extends GraphBase<IProps>{
+    readonly ctx: CanvasRenderingContext2D;
     constructor(config: IRectClass) {
         super();
         const { x, y, width, height } = config.option;
-        this.props = {
-            ctx: config.content.ctx,
-            posInfor: { x, y, width, height },
-            drawWay: config.option.drawWay || "stroke",
-            color: config.option.color,
-            eventCollect: config.content.eventCallback,
-            mouseInside: false  // 图形自己维护鼠标是否在自己的身上
-        }
+        //config.content.eleArr.push(this);
+        this.x = x;
+        this.y = y;
+        this.drx = 0;
+        this.dry = 0;
+        this.width = width;
+        this.height = height;
+        this.drawWay = config.option.drawWay || "fill";
+        this.color = config.option.color || "color";
+        this.eventCollect = config.content.eventCallback;
+        this.ctx = config.content.ctx;
+        this.isInside = false;
+        this.canDrap = false;
+        this.optionDrap = config.option.canDrap;
         this.draw();
+        this.registeredInitEvent();
     }
 
     draw() {
-        const ctx: CanvasRenderingContext2D = this.props.ctx;
-        const { x, y, width, height } = this.props.posInfor;
+        const ctx: CanvasRenderingContext2D = this.ctx;
+        const { x, y, width, height } = this;
         ctx.save(); 
         ctx.beginPath();
-        switch(this.props.drawWay) {
+        switch(this.drawWay) {
             case "fill":
-                ctx.fillStyle = this.props.color;
+                ctx.fillStyle = this.color;
                 ctx.fillRect(x, y, width, height);
                 break;
             default:
-                ctx.strokeStyle = this.props.color;
+                ctx.strokeStyle = this.color;
                 ctx.rect(x, y, width, height);
                 ctx.stroke();
         }
@@ -46,24 +59,46 @@ export default class Rect extends GraphBase<IProps>{
     }
 
     pointInGraph(mx: number, my: number) :boolean {
-        const { x, y, width, height } = this.props.posInfor;
+        const { x, y, width, height } = this;
         let isInside: boolean = true; // 假定鼠标在当前元素上
         if ( mx < x || mx > x + width || my < y  || my > y + height  ) {
             isInside =  false; // 不在的话将状态置为 false
         }
-        this.props.mouseInside = isInside;
         return isInside;
     }
 
-    on(eventType: string, callBack: (e?: Event) => void ) {
-        if ( this.props.eventCollect[eventType] ) {
+    on(eventType: string, callBack: (e?: ISelfEvent) => void ) {
+        if ( this.eventCollect[eventType] ) {
             const tmpObj: IEventFunc = {
                 func: callBack.bind(this),
-                isInside: this.props.mouseInside
+                isInside: this.isInside,
+                content: this
             }
-            this.props.eventCollect[eventType].push(tmpObj);
+            this.eventCollect[eventType].push(tmpObj);
         } else {
             console.log(`${eventType} 事件暂不支持`)
         }
+    }
+
+    /**
+     * 需要给每个图形注册基本的拖拽事件
+     * 在 mousedown 事件里要改变图形的拖拽状态 表示此时是可拖拽的  用于改变图形的拖拽状态   保存鼠标位置和当前圆形中心点的坐标差
+     * 在 mousemove 事件里面改变图形的位置信息
+     * 在 mouseup 事件里面改变图形的拖拽状态  解除拖拽状态
+     */
+
+    drapMouseDown(selfEvent: ISelfEvent) {
+        this.drx = selfEvent.mouseX - this.x;
+        this.dry = selfEvent.mouseY - this.y;
+        this.canDrap = true;
+    }
+
+    drapMouseUp() {
+        this.canDrap = false;
+    }
+
+    registeredInitEvent() { 
+        this.on( "mousedown", this.drapMouseDown.bind(this) );
+        this.on( "mouseup", this.drapMouseUp.bind(this) );
     }
 }

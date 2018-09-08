@@ -2,7 +2,8 @@
 import GraphBase from "./graphBase";
 import { ILineClass } from "./interface/graphInterface";
 import { IEventFunc } from "./interface/baseClassInterface";
-export default class Line extends GraphBase<any>{
+import { ISelfEvent } from "./interface/SelfEvent";
+export default class Line extends GraphBase{
     eventCollect: { [name: string]: Array<IEventFunc> }
     constructor(option: ILineClass) {
         super()
@@ -17,11 +18,12 @@ export default class Line extends GraphBase<any>{
         return true;
     }
 
-    on(eventType: string, callBack: (e?: Event) => void) {
+    on(eventType: string, callBack: (e?: ISelfEvent) => void) {
         if ( this.eventCollect[eventType] ) {
             const tmpObj: IEventFunc = {
                 func: callBack.bind(this),
-                isInside: false
+                isInside: false,
+                content: this
             }
             this.eventCollect[eventType].push(tmpObj);
         } else {
