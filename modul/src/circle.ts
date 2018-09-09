@@ -15,6 +15,7 @@ export default class Circle extends GraphBase {
     dry: number;
     canDrap: boolean;
     drawWay: string;
+    type: string;
     color: string;
     optionDrap: boolean;
     eventCollect: { [propsName: string] : Array<IEventFunc>};
@@ -27,6 +28,7 @@ export default class Circle extends GraphBase {
         this.r = cr;
         this.drx = 0;
         this.dry = 0;
+        this.type = "Circle"
         this.drawWay = option.option.drawWay || "fill";
         this.color = option.option.color || "#333";
         this.ctx = option.content.ctx;

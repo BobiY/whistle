@@ -16,6 +16,7 @@ export default class Rect extends GraphBase{
     color: string;
     canDrap: boolean;
     optionDrap: boolean;
+    type: string;
     eventCollect: { [propsName: string] : Array<IEventFunc>  };  // 图像上注册的鼠标事件
     readonly ctx: CanvasRenderingContext2D;
     constructor(config: IRectClass) {
@@ -27,6 +28,7 @@ export default class Rect extends GraphBase{
         this.drx = 0;
         this.dry = 0;
         this.width = width;
+        this.type = "Rect"
         this.height = height;
         this.drawWay = config.option.drawWay || "fill";
         this.color = config.option.color || "color";
