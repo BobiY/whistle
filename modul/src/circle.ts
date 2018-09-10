@@ -6,6 +6,7 @@ import GraphBase from "./graphBase";
 import { IArcClass } from "./interface/graphInterface";
 import { IEventFunc } from "./interface/baseClassInterface";
 import { ISelfEvent } from "./interface/SelfEvent";
+import * as CommonVar from "./Util/CommonVar";
 export default class Circle extends GraphBase {
     isInside: boolean;
     x: number;
@@ -25,16 +26,16 @@ export default class Circle extends GraphBase {
         const { cx, cy ,cr } = option.option;
         this.x = cx;
         this.y = cy;
-        this.r = cr;
-        this.drx = 0;
-        this.dry = 0;
-        this.type = "Circle"
-        this.drawWay = option.option.drawWay || "fill";
-        this.color = option.option.color || "#333";
+        this.r = cr || CommonVar.CIRCLERADIUS;
+        this.drx = CommonVar.INITDRX;
+        this.dry = CommonVar.INITDRY;
+        this.type = CommonVar.CIRCLETYPE;
+        this.drawWay = option.option.drawWay || CommonVar.DRAWWAY;
+        this.color = option.option.color || CommonVar.INITCOLOR;
         this.ctx = option.content.ctx;
         this.eventCollect = option.content.eventCallback;
-        this.isInside = false;
-        this.canDrap = false;
+        this.isInside = CommonVar.INITINSIDE;
+        this.canDrap = CommonVar.INITDRAP;
         this.optionDrap = option.option.canDrap;
         this.draw();
         this.registeredInitEvent();
@@ -46,7 +47,7 @@ export default class Circle extends GraphBase {
         ctx.save(); 
         ctx.beginPath();
         switch(this.drawWay) {
-            case "fill":
+            case CommonVar.DRAWWAY:
                 ctx.fillStyle = this.color;
                 ctx.arc(x, y, r, 0,2*Math.PI);
                 ctx.fill();

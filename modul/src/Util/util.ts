@@ -7,6 +7,8 @@
  *  6. 随机颜色计算方程
  */
 import { Pos } from "./UtilInterface";
+import * as CommonVar from "./CommonVar";
+import { coordinateDifference, getPropsValue } from "./CommonFunc";
 export default class Util {
     [props: string]: any;
     static _Intance: Util;
@@ -74,12 +76,8 @@ export default class Util {
 
     getResetLint(eleArr: Array<any>) {
         const result = eleArr.map( item => {
-            if ( item.type === "Rect" ) {
-                const { x, y, width, height } = item;
-                return this.getRectCenterPoint(x, y, width, height);
-            } else if ( item.type === "Circle" ) {
-                return { w: item.x, h:item.y }
-            }
+            const { x, y, width, height } = getPropsValue(item);
+            return { w: x+ width/2, h:y+height/2 }
         } )
         return result;
     }
@@ -92,38 +90,80 @@ export default class Util {
 
     calcResultPos( tmpArr: Array<any>, lineFunc: any, symbolrelationship: any) {
         const result = tmpArr.map( (item, index) => {
-            if ( item.type === "Rect" ) {
+            if ( item.type === CommonVar.RECTTYPE ) {
                 const x = lineFunc.x(item.y + item.height);
                 let g = Math.atan(lineFunc.slope);
-                const botmX = item.x + item.width;
-                const topX = item.x;
-                const leftY = item.y;
-                const rightY = item.y + item.height;
-                const centerPos = {x: item.x + item.width/2, y: item.y + item.height/2}
-                const leftLine = lineFunc.y(item.x)
-                const bottomLine = lineFunc.x(item.y + item.height)
-                const rightLine = lineFunc.y(item.x + item.width)
-                const topLine = lineFunc.x(item.y)
-                const leftPoin = {x: item.x, y:leftLine, isRect: (leftLine < rightY && leftLine > leftY) }
-                const bottomPoin = { x: bottomLine, y: item.y + item.height, isRect: ( bottomLine > topX && bottomLine< botmX ) }
-                const rightPoin = { x:item.x + item.width, y: rightLine, isRect: ( rightLine < rightY && rightLine > leftY ) }
-                const topPoin = { x: item.x, y: topLine, isRect: ( topLine < rightY && topLine > leftY ) }
-                console.log( leftPoin, bottomPoin,rightPoin,topPoin );
-                // if ( symbolrelationship.x <= 0 ) {
-                //     return {x, y:item.y + item.height};
-                // } else {
-                //     return {x, y:(item.y - item.height)};
-                // }
-                return {x: (item.x + item.width/2), y:(item.y + item.height/2)}
-            } else if ( item.type === "Circle" ) {
+                const botmY = item.y + item.height;  // 方形下边界直线方程 
+                const topY = item.y;  // 水平上边界直线方程
+                const leftX = item.x; // 竖直左边界直线方程 
+                const rightX = item.x + item.width; // 竖直右边界直线方程
+                const centerPos = {x: item.x + item.width/2, y: item.y + item.height/2} // 中心点坐标
+                const leftLine = lineFunc.y(leftX) // 左边线与直线的相交点的 y 坐标
+                const bottomLine = lineFunc.x(botmY) // 下边线与直线相交点的 x 坐标
+                const rightLine = lineFunc.y(rightX) // 右边线与直线相交的 y 坐标
+                const topLine = lineFunc.x(topY)  // 上边线与直线相交的 x 左边
+                const leftPoin = {x: leftX, y:leftLine, isRect: (leftLine <= botmY && leftLine >= topY) }
+                const bottomPoin = { x: bottomLine, y: botmY, isRect: ( rightX >= bottomLine && bottomLine >= leftX ) }
+                const rightPoin = { x:rightX, y: rightLine, isRect: ( rightLine <= botmY && rightLine >= topY ) }
+                const topPoin = { x: topLine, y: topY, isRect: ( topLine <= rightX && topLine >= leftX ) }
+                if ( index === 0 ) { // 说明是在上面
+                    if ( symbolrelationship.x > 0 ) { // 大于 0 说明是在
+                        if ( leftPoin.isRect ) {
+                            return {x: leftPoin.x, y:leftPoin.y}
+                        } else if ( bottomPoin.isRect ){
+                            return {x: bottomPoin.x, y:bottomPoin.y}
+                        }
+                    } else if ( symbolrelationship.x === 0 ) {
+                        return {x: item.x + item.width/2, y:bottomPoin.y}
+                    } else {
+                        if ( rightPoin.isRect ) {
+                            return {x: rightPoin.x, y:rightPoin.y}
+                        } else if ( bottomPoin.isRect ){
+                            return {x: bottomPoin.x, y:bottomPoin.y}
+                        }
+                    }
+                } else { // 说明是在下面
+                    //console.log( symbolrelationship.x )
+                    if ( symbolrelationship.x > 0  ) {
+                        if ( rightPoin.isRect ) {
+                            return {x: rightPoin.x, y:rightPoin.y}
+                        } else if ( topPoin.isRect ){
+                            return {x: topPoin.x, y:topPoin.y}
+                        }
+                    } else if (symbolrelationship.x === 0) {
+                        return {x: item.x + item.width/2, y:topPoin.y}
+                    } else {
+                        if ( rightPoin.isRect ) {
+                            return {x: leftPoin.x, y:leftPoin.y}
+                        } else if ( topPoin.isRect ){
+                            return {x: topPoin.x, y:topPoin.y}
+                        }
+                    }
+                }
+            } else if ( item.type === CommonVar.CIRCLETYPE ) {
                 // console.log(lineFunc.slope)
                 let g = Math.atan(lineFunc.slope);
-                //console.log(symbolrelationship.y, g)
-                    if ( (symbolrelationship.y > 0 && g > 0) || ( symbolrelationship.y < 0 && g < 0 ) ) {  // 代表圆的 1 3 象限
+                if ( g === Infinity ) {
+                    g = Math.PI /2;
+                } else if ( g === -Infinity ) {
+                    g = -Math.PI / 2;
+                }
+                //console.log(symbolrelationship.x,g)
+                if ( index === 0 ) { // 说明是在上面
+                    if ( symbolrelationship.x > 0 ) { // 说明是在右边，这时是第二象限
+                        return { x: item.x - Math.cos(g)*item.r, y:item.y - Math.sin(g)*item.r }
+                    } else { // 这时是在第一象限
                         return { x: item.x + Math.cos(g)*item.r, y:item.y + Math.sin(g)*item.r }
-                    } else { 
-                        return { x: item.x - Math.cos(g)*item.r, y:item.y - Math.sin(g)*item.r } // 代表圆的 2，4 象限
                     }
+                } else {
+                    if ( symbolrelationship.x > 0 ) { // 说明是在右边，这时是第三象限
+                        return { x: item.x + Math.cos(g)*item.r, y:item.y + Math.sin(g)*item.r }
+                    } else { // 这时是在第四象限
+                        return { x: item.x - Math.cos(g)*item.r, y:item.y - Math.sin(g)*item.r }
+                    }
+                }   
+            } else {
+                return item;
             }
         });
         return result;

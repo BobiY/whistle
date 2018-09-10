@@ -3,6 +3,7 @@ import { IRectClass } from "../interface/graphInterface";
 import { IPosInfor } from "./Interface";
 import { IEventFunc } from "../interface/baseClassInterface";
 import { ISelfEvent } from "../interface/SelfEvent";
+import * as CommonVar from "../Util/CommonVar";
 // 方块类
 export default class Rect extends GraphBase{
     isInside :boolean;
@@ -25,17 +26,17 @@ export default class Rect extends GraphBase{
         //config.content.eleArr.push(this);
         this.x = x;
         this.y = y;
-        this.drx = 0;
-        this.dry = 0;
+        this.drx = CommonVar.INITDRX;
+        this.dry = CommonVar.INITDRY;
         this.width = width;
-        this.type = "Rect"
+        this.type = CommonVar.RECTTYPE;
         this.height = height;
-        this.drawWay = config.option.drawWay || "fill";
-        this.color = config.option.color || "color";
+        this.drawWay = config.option.drawWay || CommonVar.DRAWWAY;
+        this.color = config.option.color || CommonVar.INITCOLOR;
         this.eventCollect = config.content.eventCallback;
         this.ctx = config.content.ctx;
-        this.isInside = false;
-        this.canDrap = false;
+        this.isInside = CommonVar.INITINSIDE;
+        this.canDrap = CommonVar.INITDRAP;
         this.optionDrap = config.option.canDrap;
         this.draw();
         this.registeredInitEvent();
@@ -47,7 +48,7 @@ export default class Rect extends GraphBase{
         ctx.save(); 
         ctx.beginPath();
         switch(this.drawWay) {
-            case "fill":
+            case CommonVar.DRAWWAY:
                 ctx.fillStyle = this.color;
                 ctx.fillRect(x, y, width, height);
                 break;

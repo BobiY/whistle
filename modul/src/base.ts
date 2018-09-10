@@ -44,7 +44,7 @@ export default class BaseWhistle implements IBaseClassProps{
         const ctx = this.ctx;
         const ele = this.paintbrush
         Promise.resolve().then( () => { 
-            ctx.clearRect(0,0,ele.width, ele.height)
+            ctx.clearRect(0,0,ele.width, ele.height) // 重绘之前需要清理画布
             this.eleArr.forEach( item => {
                 item.draw();
             } ) 
@@ -63,8 +63,7 @@ export default class BaseWhistle implements IBaseClassProps{
             rootEle.removeEventListener(item, () => {console.log("event has removed")}) // 在初始化时，先移除用户提前绑定的事件
             rootEle.addEventListener(item, (e: MouseEvent) => {
                 // 需要实时的获取鼠标位置
-                const eventType: string = e.type;
-                //console.log(this.eventCallback)
+                const eventType: string = e.type; // 触发的鼠标事件类型
                 // 记录鼠标位置
                 const pos = this.paintbrush.getBoundingClientRect();
                 this.mousePos = {x: e.clientX - pos.left, y: e.clientY - pos.top  }
