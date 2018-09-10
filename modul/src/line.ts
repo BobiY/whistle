@@ -58,7 +58,6 @@ export default class Line extends GraphBase{
          * 2. x1 是元素 x2 是数字  或者  x2 是元素 x1 是数字
          * 3. x1 和 x2 都是元素
          */
-        //console.log(ele1,ele2)
         if ( checkType.isNumber(ele1) && checkType.isNumber(ele2) ) {
             console.log("传入的数字，不用做额外处理")
         } else if ( checkType.isObject(ele1) && checkType.isObject(ele2) ) {
@@ -71,7 +70,6 @@ export default class Line extends GraphBase{
             const tmpEle1 = checkType.isNumber(ele2) ? { x: this.x2, y: this.y2 } : { x: this.x1, y: this.y1 };  
             const tmpArr = [tmpEle1, tmpEle2] ;  // 这一步保证 坐标小的图形在上边 大的在下边
             this.resetLinePon(tmpArr, checkType) 
-            // console.log(ele1, ele2);
         }
 
     }

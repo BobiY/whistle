@@ -22,7 +22,7 @@ export function getPropsValue (ele: any): IPosTmp { // 获取固定的属性值
     return tmpObj;
 }
 
-export function resetLinePon(tmpArr: any[], checkType: any, ) {
+export function resetLinePon(tmpArr: any[], checkType: any, ) { // 改变线条的两点坐标  使用时需要在构造函数里绑定 this
     const recordSymbol: any = coordinateDifference(tmpArr[0], tmpArr[1]); // 获取坐标差
     const result = checkType.getResetLint(tmpArr); // 获取中心点坐标
     result.forEach( (item: any, index: number) => {
