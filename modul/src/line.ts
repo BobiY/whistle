@@ -63,13 +63,21 @@ export default class Line extends GraphBase{
         } else if ( checkType.isObject(ele1) && checkType.isObject(ele2) ) {
             // 这里表示是两个元素  需要重置 x1 y1 x2 y2  现在默认是中心点
             const tmpArr = ele1.y > ele2.y ? [ele2, ele1] : [ele1, ele2] ;  // 这一步保证 坐标小的图形在上边 大的在下边
-            this.resetLinePon(tmpArr, checkType)
+            const results = this.resetLinePon(tmpArr, checkType);
+            results.forEach( (item : any, index: number) => {
+                this["x" + (index + 1)] = item.x;
+                this["y" + (index + 1)] = item.y;
+            } ) 
         } else if ( ( checkType.isNumber(ele1) && checkType.isObject(ele2) ) || ( checkType.isNumber(ele2) && checkType.isObject(ele1) ) ) {
             // 这里重置参数的作用是，永远 tmpEle1 代表的是 元素  tmpEle2 代表的是 点
             const tmpEle2 = checkType.isNumber(ele1) ? ele2 : ele1;
             const tmpEle1 = checkType.isNumber(ele2) ? { x: this.x2, y: this.y2 } : { x: this.x1, y: this.y1 };  
             const tmpArr = [tmpEle1, tmpEle2] ;  // 这一步保证 坐标小的图形在上边 大的在下边
-            this.resetLinePon(tmpArr, checkType) 
+            const results = this.resetLinePon(tmpArr, checkType);
+            results.forEach( (item : any, index: number) => {
+                this["x" + (index + 1)] = item.x;
+                this["y" + (index + 1)] = item.y;
+            } ) 
         }
 
     }
