@@ -42,6 +42,7 @@ export interface ILine extends IGraphCommon {
     y2: number,
     lineWidth: number;
     color: string;
+    bendWay: string;
 }
 
 // 线条类需要的参数

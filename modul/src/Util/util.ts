@@ -23,6 +23,9 @@ export default class Util {
         this.checkTypes();
     }
 
+    getPropsValue(object: any, propsName:string) :number {  // 只能检测数字类型的属性
+        return object[propsName] ? object[propsName] : 0 
+    }
     calcSumOfSquare(pos: Pos) { // 计算平方和
 
     }

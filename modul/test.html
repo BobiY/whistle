@@ -21,7 +21,7 @@
     const stage = new Stage("canvas");
     const rect = stage.Rect({x:150, y:150, width:40, height:40, color:"#999", drawWay:"fill", canDrap: true});
     const arc = stage.Arc({cx:300, cy:300, cr:30, color:"red", canDrap: true})
-    const line = stage.Line({x1: 40, x2:rect, y1:40, y2:60})
+    const line = stage.Line({x1: arc, x2:rect, y1:40, y2:60})
     //arc.on("mousemove", function aa(){ console.log( typeof this) });
     //rect.on("mousedown", function bb(){console.log(this)});
     console.log(stage)
