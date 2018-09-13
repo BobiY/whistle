@@ -50,3 +50,18 @@ export interface ILineClass {
     content: BaseWhistle,
     option: ILine
 }
+
+
+export interface ITextClass{
+    font?: string
+    drawWay?: string
+    text: string
+    x: number
+    y: number 
+    color?: string 
+}
+
+export interface IText{
+    content: BaseWhistle,
+    option: ITextClass
+}

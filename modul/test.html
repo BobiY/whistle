@@ -19,9 +19,11 @@
 <script src="./dist/whistle.js"></script>
 <script>
     const stage = new Stage("canvas");
+    console.log()
     const rect = stage.Rect({x:150, y:150, width:40, height:40, color:"#999", drawWay:"fill", canDrap: true});
     const arc = stage.Arc({cx:300, cy:300, cr:30, color:"red", canDrap: true})
     const line = stage.Line({x1: arc, x2:rect, y1:40, y2:60})
+    const text = stage.Text({x: 30, y:30, text:"hello world", drawWay: "stroke"})
     //arc.on("mousemove", function aa(){ console.log( typeof this) });
     //rect.on("mousedown", function bb(){console.log(this)});
     console.log(stage)

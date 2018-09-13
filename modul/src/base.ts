@@ -2,6 +2,7 @@
 import Circle from "./circle";
 import Rect from "./Rect/rect";
 import Line from "./line";
+import Texts from "./Text";
 import ErrorBase from "./error";
 import Util, * as Utils from "./Util/util";
 import { IRect, IArc, ILine } from "./interface/graphInterface";
@@ -128,6 +129,12 @@ export default class BaseWhistle implements IBaseClassProps{
         const line = new Line({content:this, option})
         this.eleArr.push(line);
         return line
+    }
+
+    private Text(option: any) :Texts {
+        const text = new Texts({content: this, option});
+        this.eleArr.push(text);
+        return text
     }
     /***********图形相关方法结束*************/
 
