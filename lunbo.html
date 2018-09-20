@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        #content{
+            margin: 50px auto;
+            width: 400px;
+            height: 300px;
+            position: relative;
+            overflow: hidden;
+        }
+        #wapper{
+            position: absolute;
+            top: 0;
+            left: 0;
+            /* transition: all 0.5s; */
+            width: 2000px
+        }
+        #wapper div {
+            width: 400px;
+            height: 300px;
+            background: #999;
+            text-align: center;
+            line-height: 300px;
+            float: left;
+            margin: 0;
+            padding: 0;
+        }
+        .a{
+            background: #666;
+            z-index: 9999;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 400px;
+            transition: all 0.5s;
+        }
+        .no-height{
+            height: 0;
+        }
+        .height{
+            height: 50px;
+        }
+    </style>
+</head>
+<body>
+    <div id="content">
+        <div id="wapper">
+            <div>1</div>
+            <div>2</div>
+            <div>3</div>
+            <div>4</div>
+            <div>1</div>
+        </div>
+        <div id="title" class="a height">啦啦啦啦啦啦</div>
+    </div>
+</body>
+<script>
+    const wapper = document.getElementById("wapper");
+    const title = document.getElementById("title");
+    let left = 0;
+    let time = 3000;
+    let titleSetTime = null;
+    let anminSetTimr = null;
+    const startUp = () => {
+        titleSetTime = setTimeout( () => {
+            title.className = "a no-height"
+        }, 2000 )
+    }
+    wapper.addEventListener("webkitTransitionEnd", function(){ //动画结束时事件 
+        if ( time !== 0 ) {
+          title.className = "a height";
+          titleSetTime = setTimeout( () => {
+              title.className = "a no-height"
+          } , 2000)
+        }
+    }, false); 
+
+    function anmin() {
+        anminSetTimr = setTimeout( () => {
+            left -= 400;
+            if ( left < -1600 ) {
+                left = 0;
+                time = 1000/16;
+                wapper.style.transition = "all 0s";
+            } else {
+                time = 3000;
+                wapper.style.transition = "all 0.5s";
+            }
+            wapper.style.left = left + "px";
+            anmin();
+        }, time )
+    }
+    startUp();
+    anmin();
+    
+    const content = document.getElementById("content");
+    content.addEventListener("mouseover", () => {
+        clearTimeout(titleSetTime);
+        clearTimeout(anminSetTimr);
+    })
+    content.addEventListener("mouseout", () => {
+        anmin();
+        if (title.className.indexOf("height") !== -1)  {
+            startUp();
+        }
+    })
+</script>
+</html>

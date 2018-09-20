@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        #search{
+            width: 400px;
+            height: 100px;
+            border: 1px solid #999;
+            box-shadow: 0 0 5px #333;
+            padding: 20px 20px 0;
+            /* box-sizing: border-box; */
+            margin-top: 20px;
+            position: relative;
+        }
+        #close{
+            position: absolute;
+            right: 15px;
+            top: 15px;
+            cursor: pointer;
+        }
+        #content{
+            display: flex;
+            width: 400px;
+            height: 200px;
+            border: 1px solid #999;
+            box-shadow: 0 0 5px #333;
+            padding: 20px; 
+        }
+        #text{
+            width: 320px;
+            margin-right: 20px;
+            border: 1px solid #333;
+            padding: 10px;
+        }
+
+        #select{
+            transition: all 0.5s;
+        }
+        #select span {
+            display: block;
+            margin-top: 15px;
+            width: 80px;
+            height: 40px;
+            color: #fff;
+            line-height: 40px;
+            text-align: center;
+            cursor: pointer;
+        }
+        #select span:first-child{
+            border: 1px solid #f00;
+            background: #f00;
+        }
+
+        #select span:last-child{
+            border: 1px solid #00f;
+            background: #00f;
+        }
+        #extends{
+            display: block;
+            width: 80px;
+            height: 40px;
+            color: #fff;
+            line-height: 40px;
+            text-align: center;
+            background: #0f0;
+            cursor: pointer;
+        }
+        .no-height{
+            height: 0;
+            overflow: hidden;
+        }
+        .active{
+            padding: 10px 15px;
+            background: #00f;
+            color: #fff;
+        }
+        #btn-lists{
+            height: 42px;
+        }
+        #btn-lists span{
+            cursor: pointer;
+        }
+        .no-n-height{
+            display: none !important;
+        }
+        #text3{
+            padding: 8px 15px;
+            color: #fff;
+            background: #0f0;
+            cursor: pointer;
+        }
+        #text1, #text2{
+            width: 150px;
+            height: 30px;
+        }
+        .high-leight{
+            color:#ffc000;
+        }
+    </style>
+</head>
+<body>
+    <div id="content">
+        <div id="text">javas地位得发发货人光和热件日韩风ss覅欧冠和规范in将萨达是</div>
+        <div id="btn-list">
+            <div id="extends">展开</div>
+            <div id="select" class="no-height">
+                <span>查找</span>
+                <span>替换</span>
+            </div>
+        </div>
+    </div>
+    <div id="search" class="no-n-height">
+        <span id="close">X</span>
+        <div id="btn-lists">
+            <span class="active">查找</span>
+            <span>替换</span>
+        </div>
+        <div id="wapper">
+            <input type="text" id="text1">
+            <input type="text" id="text2" style="display: none;">
+            <span id="text3">确定</span>
+        </div>
+    </div>
+</body>
+<script>
+   const extend = document.getElementById("extends");
+   const select = document.getElementById("select");
+   const search = document.getElementById("search");
+   const btnList = document.getElementById("btn-lists");
+   const text1 = document.getElementById("text1");
+   const text2 = document.getElementById("text2");
+   const text3 = document.getElementById("text3");
+   const text = document.getElementById("text");
+   const close = document.getElementById("close");
+   let flge = "查找";
+   close.addEventListener( "click", () => {
+        select.className = "no-height";
+        search.className = "no-n-height";
+        text1.value = "";
+        text2.value = "";
+   } )
+   extend.addEventListener( "click", () => {
+       if ( select.className.indexOf("no-height") !== -1 ) {
+           select.className = "";
+           search.className = "";
+        } else {
+            select.className = "no-height";
+            search.className = "no-n-height";
+        }
+   } );
+   select.addEventListener( "click", (e) => {
+       const text = e.target.innerHTML;
+       let ele = null;
+       if ( text === "查找" ) {
+            Array.from(btnList.children).forEach( item => {
+                item.className = "";
+                if ( item.innerHTML === text ) {
+                    ele = item;
+                }
+            } );
+            ele.className = "active";
+            text2.style.display = "none";
+            text1.value = "";
+           text2.value = "";
+           flge = "查找";
+       } else if ( text === "替换" ) {
+        Array.from(btnList.children).forEach( item => {
+                item.className = "";
+                if ( item.innerHTML === text ) {
+                    ele = item;
+                }
+            } );
+            ele.className = "active";
+            text2.style.display = "";
+            text1.value = "";
+            text2.value = "";
+            flge = "替换";
+       }    
+   } )
+   btnList.addEventListener( "click", (e) => {
+    const text = e.target.innerHTML;
+       if ( text === "查找" ) {
+            Array.from(btnList.children).forEach( item => item.className = "" );
+           e.target.className = "active";
+           text2.style.display = "none";
+           text1.value = "";
+           text2.value = "";
+           flge = "查找";
+       } else if ( text === "替换" ) {
+            Array.from(btnList.children).forEach( item => item.className = "" );
+            e.target.className = "active";
+            text2.style.display = "";
+            text1.value = "";
+            text2.value = "";
+            flge = "替换";
+       }
+   } )
+
+   text3.addEventListener( "click", () => {
+       const content = text.innerHTML;
+       const text1s = text1.value;
+       const text2s = text2.value; 
+       if ( flge === "替换" ) { 
+        if ( text1s === "" ) {
+               alert("请输入要被替换的内容");
+               return;
+           }
+           if ( text2s === "" ) {
+                alert("请输入要替换的内容");
+               return;
+           }
+           if ( content.indexOf(text1s) !== -1 ) {
+               const tmpFlge = window.confirm("确定要替换吗？");
+               if ( tmpFlge ) {
+                const newStr =  content.replace(text1s, text2s)
+            
+                text.innerHTML = newStr;
+               }
+           } else {
+                alert("未找到您要替换的内容")
+           }
+       } else if ( flge === "查找" ) {
+           if ( text1s === "" ) {
+               alert("请输入要查找的内容");
+               return;
+            }
+           if ( content.indexOf(text1s) !== -1 ) {
+                const one = content.replace('<span class="high-leight">', "");
+                const two = one.replace("</span>", "");
+                const tmp = "<span class='high-leight'>" + text1s + "</span>";
+                const newStr =  two.replace(text1s, tmp)
+            
+                text.innerHTML = newStr;
+           } else {
+               alert("未找到您输入的内容")
+           }
+       }
+       text1s.vaule = "";
+       text2s.value = "";
+   } )
+</script>
+</html>

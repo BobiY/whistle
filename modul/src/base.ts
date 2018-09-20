@@ -67,7 +67,7 @@ export default class BaseWhistle implements IBaseClassProps{
                 // 记录鼠标位置
                 const pos = this.paintbrush.getBoundingClientRect();
                 this.mousePos = {x: e.clientX - pos.left, y: e.clientY - pos.top  }
-                const selfEvent: ISelfEvent = {
+                const selfEvent: ISelfEvent = { 
                     mouseX: this.mousePos.x,
                     mouseY: this.mousePos.y,
                 }
