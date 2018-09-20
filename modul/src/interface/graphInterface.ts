@@ -42,10 +42,26 @@ export interface ILine extends IGraphCommon {
     y2: number,
     lineWidth: number;
     color: string;
+    bendWay: string;
 }
 
 // 线条类需要的参数
 export interface ILineClass {
     content: BaseWhistle,
     option: ILine
+}
+
+
+export interface ITextClass{
+    font?: string
+    drawWay?: string
+    text: string
+    x: number
+    y: number 
+    color?: string 
+}
+
+export interface IText{
+    content: BaseWhistle,
+    option: ITextClass
 }
