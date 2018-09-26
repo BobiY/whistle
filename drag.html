@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        #div{
+            width: 100px;
+            height: 100px;
+            background: #333;
+            position: absolute;
+        }
+        #wapper{
+            width: 300px;
+            height: 400px;
+            /* border: 1px solid #d9d9d9;  */
+            box-shadow: 0 0 5px #d9d9d9;
+            margin: 50px auto;
+            overflow: hidden;
+            position: relative;
+            background: #f2f4f5;
+        }
+        #content{
+            word-break: break-all;
+            width: 260px;
+            position: absolute;
+            /* -webkit-user-select:none;
+
+            -moz-user-select:none;
+
+            -ms-user-select:none;
+
+            user-select:none; */
+        }
+        #scroll{
+            width: 20px;
+            height: 40px;
+            position: absolute;
+            background: #1890FF;
+            z-index: 999;
+        }
+        .scroll{
+            background: #13C2C2 !important;
+        }
+        #scroll-bg{
+            position: absolute;
+            width: 20px;
+            top: 0;
+            right: 0;
+            height: 400px;
+            background: #333;
+        }
+        #top-arrow{
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            width: 20px;
+            height: 20px;
+            background: #888;
+            /* transform: rotate(45deg); */
+            z-index: 888;
+        }
+        #top-arrow:hover{
+            background: #aaa;
+        }
+        #top-arrow::after{
+            content: "";
+            position: absolute;
+            top: 12px;
+            left: 5px;
+            width: 10px;
+            height: 10px;
+            /* background: #314659; */
+            border: solid #314659;
+            border-width: 0px 1px 1px 0;
+            -webkit-transform: translate(0,-50%) rotate(225deg);
+            transform: translate(0,-50%) rotate(225deg);
+        }
+        #bottom-arrow{
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 20px;
+            height: 20px;
+            background: #888;
+            z-index: 888;
+        }
+        #bottom-arrow:hover{
+            background: #aaa;
+        }
+        #bottom-arrow::after{
+            content: "";
+            position: absolute;
+            top: 7px;
+            left: 5px;
+            width: 10px;
+            height: 10px;
+            border: solid #314659;
+            border-width: 0px 1px 1px 0;
+            -webkit-transform: translate(0,-50%) rotate(45deg);
+            transform: translate(0,-50%) rotate(45deg);
+        }
+    </style>
+</head>
+<body>
+    <div id="div" style="top: 50px; left: 50px;"></div>
+    <div id="wapper">
+        <div id="content" style="top:0; left:0;">dsdjiefjirogfhrioghoituiohjijroigjopejorpeurietjhgriohghie;fe;wfjwiofjriohgtuihigfjghigudsdjiefjirogfhrioghoituiohjijroigjopejorpeurietjhgriohghie;fe;wfjwiofjriohgtuihigfjghigudsdjiefjirogfhrioghoituiohjijroigjopejorpeurietjhgriohghie;fe;wfjwiofjriohgtuihigfjghigudsdjiefjirogfhrioghoituiohjijroigjopejorpeurietjhgriohghie;fe;wfjwiofjriohgtuihigfjghigudsdjiefjirogfhrioghoituiohjijroigjopejorpeurietjhgriohghie;fe;wfjwiofjriohgtuihigfjghigudsdjiefjirogfhrioghoituiohjijroigjopejorpeurietjhgriohghie;fe;wfjwiofjriohgtuihigfjghigudsdjiefjirogfhrioghoituiohjijroigjopejorpeurietjhgriohghie;fe;wfjwiofjriohgtuihigfjghigudsdjiefjirogfhrioghoituiohjijroigjopejorpeurietjhgriohghie;fe;wfjwiofjriohgtuihigfjghigudsdjiefjirogfhrioghoituiohjijroigjopejorpeurietjhgriohghie;fe;wfjwiofjriohgtuihigfjghigudsdjiefjirogfhrioghoituiohjijroigjopejorpeurietjhgriohghie;fe;wfjwiofjriohgtuihigfjghigudsdjiefjirogfhrioghoituiohjijroigjopejorpeurietjhgriohghie;fe;wfjwiofjriohgtuihigfjghigudsdjiefjirogfhrioghoituiohjijroigjopejorpeurietjhgriohghie;fe;wfjwiofjriohgtuihigfjghigudsdjiefjirogfhrioghoituiohjijroigjopejorpeurietjhgriohghie;fe;wfjwiofjriohgtuihigfjghigudsdjiefjirogfhrioghoituiohjijroigjopejorpeurietjhgriohghie;fe;wfjwiofjriohgtuihigfjghigudsdjiefjirogfhrioghoituiohjijroigjopejorpeurietjhgriohghie;fe;wfjwiofjriohgtuihigfjghigudsdjiefjirogfhrioghoituiohjijroigjopejorpeurietjhgriohghie;fe;wfjwiofjriohgtuihigfjghigudsdjiefjirogfhrioghoituiohjijroigjopejorpeurietjhgriohghie;fe;wfjwiofjriohgtuihigfjghigudsdjiefjirogfhrioghoituiohjijroigjopejorpeurietjhgriohghie;fe;wfjwiofjriohgtuihigfjghigudsdjiefjirogfhrioghoituiohjijroigjopejorpeurietjhgriohghie;fe;wfjwiofjriohgtuihigfjghigudsdjiefjirogfhrioghoituiohjijroigjopejorpeurietjhgriohghie;fe;wfjwiofjriohgtuihigfjghigudsdjiefjirogfhrioghoituiohjijroigjopejorpeurietjhgriohghie;fe;wfjwiofjriohgtuihigfjghigudsdjiefjirogfhrioghoituiohjijroigjopejorpeurietjhgriohghie;fe;wfjwiofjriohgtuihigfjghigudsdjiefjirogfhrioghoituiohjijroigjopejorpeurietjhgriohghie;fe;wfjwiofjriohgtuihigfjghigudsdjiefjirogfhrioghoituiohjijroigjopejorpeurietjhgriohghie;fe;wfjwiofjriohgtuihigfjghigudsdjiefjirogfhrioghoituiohjijroigjopejorpeurietjhgriohghie;fe;wfjwiofjriohgtuihigfjghigudsdjiefjirogfhrioghoituiohjijroigjopejorpeurietjhgriohghie;fe;wfjwiofjriohgtuihigfjghigudsdjiefjirogfhrioghoituiohjijroigjopejorpeurietjhgriohghie;fe;wfjwiofjriohgtuihigfjghigudsdjiefjirogfhrioghoituiohjijroigjopejorpeurietjhgriohghie;fe;wfjwiofjriohgtuihigfjghigudsdjiefjirogfhrioghoituiohjijroigjopejorpeurietjhgriohghie;fe;wfjwiofjriohgtuihigfjghigudsdjiefjirogfhrioghoituiohjijroigjopejorpeurietjhgriohghie;fe;wfjwiofjriohgtuihigfjghigudsdjiefjirogfhrioghoituiohjijroigjopejorpeurietjhgriohghie;fe;wfjwiofjriohgtuihigfjghigudsdjiefjirogfhrioghoituiohjijroigjopejorpeurietjhgriohghie;fe;wfjwiofjriohgtuihigfjghigudsdjiefjirogfhrioghoituiohjijroigjopejorpeurietjhgriohghie;fe;wfjwiofjriohgtuihigfjghigudsdjiefjirogfhrioghoituiohjijroigjopejorpeurietjhgriohghie;fe;wfjwiofjriohgtuihigfjghigudsdjiefjirogfhrioghoituiohjijroigjopejorpeurietjhgriohghie;fe;wfjwiofjriohgtuihigfjghigudsdjiefjirogfhrioghoituiohjijroigjopejorpeurietjhgriohghie;fe;wfjwiofjriohgtuihigfjghigudsdjiefjirogfhrioghoituiohjijroigjopejorpeurietjhgriohghie;fe;wfjwiofjriohgtuihigfjghigudsdjiefjirogfhrioghoituiohjijroigjopejorpeurietjhgriohghie;fe;wfjwiofjriohgtuihigfjghigudsdjiefjirogfhrioghoituiohjijroigjopejorpeurietjhgriohghie;fe;wfjwiofjriohgtuihigfjghigudsdjiefjirogfhrioghoituiohjijroigjopejorpeurietjhgriohghie;fe;wfjwiofjriohgtuihigfjghigu</div>
+        <div id="scroll" style="top: 20px;right: 0;"></div>
+        <div id="scroll-bg">
+            <div id="top-arrow"></div>
+            <div id="bottom-arrow"></div>
+        </div>
+    </div>
+</body>
+<script>
+    const wapper = document.getElementById("wapper");
+    const scroll = document.getElementById("scroll");
+    const content = document.getElementById("content");
+    const topArrow = document.getElementById("top-arrow");
+    const bottomArrow = document.getElementById("bottom-arrow");
+    const scrollBg = document.getElementById("scroll-bg");
+    const contentRect = content.getBoundingClientRect();
+    const rect = wapper.getBoundingClientRect();
+    const topB = 20;
+    const bottomB = rect.height -60;
+    const movePersent = (bottomB - topB) / (contentRect.height - rect.height);
+    let flge = false;
+    let darX = 0;
+    let darY = 0;
+    const clickArrowStep = 10;
+    let aarrowTimeOut = null;
+    let barrowTimeOut = null;
+    let carrowTimeOut = null;
+    scroll.addEventListener("mousedown", function(e) {
+        darY = e.pageY - parseInt(scroll.style.top, 10);
+        flge = true;
+    })
+    scroll.addEventListener( "mousemove", function(e) {
+        if (!flge) return; 
+        //console.log("mousemove")
+        moveV( scroll,  e.pageY - darY )
+    } )
+    document.addEventListener("mousemove", function(e) { // 防止拖拽太快脱离
+        if (!flge) return; 
+        moveV( scroll,  e.pageY - darY )
+    })
+    document.addEventListener("mouseup", function() { // 统一处理 mouseup 事件
+        scroll.className = "";
+        flge = false;
+        clearInterval(aarrowTimeOut);
+        clearInterval(barrowTimeOut);
+        clearInterval(carrowTimeOut);
+    })
+
+    function moveV(ele, pos) {
+        ele.className = "scroll";
+        if ( pos <= topB ) {
+            pos = topB;
+        }
+        if ( pos>= bottomB ) {
+            pos = bottomB;
+        }
+        ele.style.top = pos + "px";
+        content.style.top = "-" + (pos-20) / movePersent + "px";
+    }
+
+    //箭头事件
+    topArrow.addEventListener("mousedown", function() {
+        aarrowTimeOut = setInterval( () => {
+            const tmp = parseInt(scroll.style.top, 10);
+            moveV(scroll, tmp - 5)
+        }, 10 )
+    })
+
+    bottomArrow.addEventListener("mousedown", function() {
+        barrowTimeOut = setInterval( () => {
+            const tmp = parseInt(scroll.style.top, 10);
+            moveV(scroll, tmp + 5)
+        }, 10 )
+    })
+
+    // 背景条事件
+    scrollBg.addEventListener("mousedown", function(e) {
+        let flge = true;
+        carrowTimeOut = setInterval( () => {
+            const tmp = parseInt(scroll.style.top, 10);
+            const x = e.pageY - rect.top;
+            let num = 0;
+            let pos = false;
+            if ( !flge ) {
+                return ;
+            }
+            if ( tmp > x ) {
+                num = tmp - 5;
+                pos = false;
+            } else {
+                num = tmp + 5;
+                pos = true;
+            }
+            if ( Math.abs(tmp - x) <= 10 ) {
+                num = x - 20;
+                flge = false;
+            }
+            moveV(scroll, num);
+        }, 10 )
+    })
+
+    // 键盘事件
+    document.addEventListener("keydown", function(e) {
+        const keyCode = e.keyCode;
+        const tmp = parseInt(scroll.style.top, 10);
+        switch(keyCode) {
+            case 38:
+                moveV(scroll, tmp - 5);
+                break;
+            case 40:
+                moveV(scroll, tmp + 5);
+        }
+    })
+    document.addEventListener("keyup", function() {
+        scroll.className = "";
+    })
+
+    // 滚轮事件
+    document.addEventListener("mousewheel", function(e) {
+        flge = false;
+        const tmp = parseInt(scroll.style.top, 10);
+       if (e.wheelDelta > 0) {
+            moveV(scroll, tmp - 5);
+       } else {
+            moveV(scroll, tmp + 5);
+       }
+        scroll.className = "";
+    })
+</script>
+</html>
