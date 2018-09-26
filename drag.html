@@ -26,13 +26,13 @@
             word-break: break-all;
             width: 260px;
             position: absolute;
-            /* -webkit-user-select:none;
+            -webkit-user-select:none;
 
             -moz-user-select:none;
 
             -ms-user-select:none;
 
-            user-select:none; */
+            user-select:none;
         }
         #scroll{
             width: 20px;
@@ -63,7 +63,7 @@
             z-index: 888;
         }
         #top-arrow:hover{
-            background: #aaa;
+            background: #bbb;
         }
         #top-arrow::after{
             content: "";
@@ -88,7 +88,7 @@
             z-index: 888;
         }
         #bottom-arrow:hover{
-            background: #aaa;
+            background: #bbb;
         }
         #bottom-arrow::after{
             content: "";
@@ -235,5 +235,8 @@
        }
         scroll.className = "";
     })
+    　document.body.onselectstart = document.body.ondrag = function(){ // 防止拖拽时选中文字
+　　　　return false;
+　　}
 </script>
 </html>
