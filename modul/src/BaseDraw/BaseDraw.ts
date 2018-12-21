@@ -1,15 +1,15 @@
 // 基类
-import Circle from "./circle";
-import Rect from "./Rect/rect";
-import Line from "./line";
-import Texts from "./Text";
-import ErrorBase from "./error";
-import Util, * as Utils from "./Util/util";
-import MousePos from "./Util/MousePos/MousePos";  // 保持鼠标位置
-import { IRect, IArc, ILine } from "./interface/graphInterface";
-import { IBaseClassProps, IBaseClassOption, IMousePos, IEventFunc } from "./interface/baseClassInterface";
-import { ISelfEvent } from "./interface/SelfEvent";
-import Event from "./event";
+import Circle from "../circle";
+import Rect from "../Rect/rect";
+import Line from "../line";
+import Texts from "../Text";
+import ErrorBase from "../error";
+import Util, * as Utils from "../Util/util";
+import MousePos from "../Util/MousePos/MousePos";  // 保持鼠标位置
+import { IRect, IArc, ILine } from "../interface/graphInterface";
+import { IBaseClassProps, IBaseClassOption, IMousePos, IEventFunc } from "../interface/baseClassInterface";
+import { ISelfEvent } from "../interface/SelfEvent";
+import Event from "../event";
 export default class BaseWhistle implements IBaseClassProps{
     public eleArr :Array<any>;
     [name: string]: any;

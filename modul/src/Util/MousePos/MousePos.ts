@@ -38,7 +38,7 @@ export default class MousePos {
             y: this.PrevY
         }
     }
-    getDifferPos() :{x: number, y: number} {
+    getDifferPos() :{x: number, y: number} {  // 计算前后两次鼠标耳朵坐标差
         return {
             x: this.currentX - this.PrevX,
             y: this.currentY - this.PrevY

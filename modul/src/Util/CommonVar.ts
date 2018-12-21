@@ -17,3 +17,11 @@ export const INITDRY = 0; // 默认的鼠标在图形上的 y 坐标
 
 export const INITDRAP = false; // 图形默认是不支持拖拽的
 export const INITINSIDE = false; // 默认鼠标是不在图形中的
+
+
+// 基类的基本属性
+export const FONT_COLOR = "#666";
+export const FILL_COLOR = "#13c2c2";
+export const STORKE_COLOR = "#13c2c2";
+export const LINE_WIDTH = 1;
+export const FONT_SIZE = "14px";

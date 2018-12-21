@@ -1,5 +1,5 @@
 import { IGraphCommon } from "./commonInterface";
-import BaseWhistle from "../base";
+import BaseWhistle from "../BaseDraw/BaseDraw";
 // 各个图形接口只定义需要传入的个性数据
 
 
